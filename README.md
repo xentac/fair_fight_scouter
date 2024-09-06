@@ -1,4 +1,5 @@
-# Fair Fight Script
+# Fair Fight Script - For [Torn](https://www.torn.com/2670953)
+
 # Description
 
 The Fair Fight Script shows you how difficult a fight would be between yourself and that opponent. This is shown as a value named the “Fair Fight” (FF) value which is a number which represents how your battle score relates to their battle score.
