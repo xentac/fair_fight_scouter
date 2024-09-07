@@ -118,13 +118,13 @@ During chains and wars, however, any hits at 1.3FF or below are given a special 
 Green Sparkles
 
 <p align="center" width="100%">
-<img src="https://absolutely-golden-airedale.edgecompute.app/static/lime_green_stars.gif" width="600">
+<img src="https://github.com/rDacted2/fair_fight_scouter/blob/c259c12dc853c6c2991a33fe6585f2922233f643/images/lime_green_stars.gif" width="600">
 </p>
 
 Poop
 
 <p align="center" width="100%">
-<img src="https://absolutely-golden-airedale.edgecompute.app/static/poop.gif" width="600">
+<img src="https://github.com/rDacted2/fair_fight_scouter/blob/c259c12dc853c6c2991a33fe6585f2922233f643/images/poop.gif" width="600">
 </p>
 
 Example chain view
