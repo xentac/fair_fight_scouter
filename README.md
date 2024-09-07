@@ -135,6 +135,21 @@ Example chain view
 
 # Frequently Asked Questions
 
+## I'm concerned about giving you my api key. Why don't you do everything in script? Why send the api key to your server at all?
+
+There are actually several reasons.
+
+1. Firstly to prevent abuse I need to authenticate the requests somehow and identify the user. The easiest way to do this is to use an api key.
+2. In order to calculate the FF value of a fight between yourself and your opponent I need your battle score, and it needs to be accurate
+3. The database is populated with battle scores collected through the accurate calculation of recent battles. If the userscript pulled the attack logs and fed them to the server I would also need to somehow ensure it isn't maliciously modified to poison the database. It's a lot easier for me to pull the logs from the torn api than for me to sent logs by torn users and somehow architect a system thats resistant to a few users who may desire to abuse the system by feeding me fraudlent results.
+4. It's actually easier for me to do everything in the backend. Doing everything in the userscript is challenging. It needs to be in javascript, using standard libraries, running in multiple tabs, in various browsers, possibly using old or broken versions of my userscript. In contrast the backend can be any technology stack I want, using any libraries, running in a controlled environment which I can update and synchronise as required. It's significantly easier to put the work into the backend and leave the frontend as light as possible.
+
+The main reason I suspect this is asked is because people are worried about sending their api key to an external service. I understand this concern and suggest the following for consideration:
+
+1. If I were doing anything improper with these keys then I expect I will be fedded pretty quickly, and I'm keen for that not to happen.
+2. The keys don't have to be limited keys, they can be custom keys to limit your exposure. The only thing the key is needed for is to pull your battle stats and see your attack history (and to identify who you are). If you're interested in making a custom key then read the obligatory warning section which describes how to do that.
+3. Your key isn't stored anywhere on my system. At most it's held in memory for as long as required, and hashed with a salt so I can locally validate your key without constantly hitting torn servers (note that the process of hashing your api key with a salt makes it practically irreversible, so I can store it and not worry about anyone taking the value and extracting your api_key from it)
+
 ## How frequently will you use my key?
 
 Your key is primarily required to pull back your attack logs and battle score. It should be used once every 10-60 minutes
