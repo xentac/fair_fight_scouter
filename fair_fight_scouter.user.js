@@ -4,7 +4,7 @@
 // @match         https://www.torn.com/profiles.php?XID=*
 // @match         https://www.torn.com/loader.php?sid=attack&user2ID=*
 // @match         https://www.torn.com/factions.php*
-// @version       1.06
+// @version       1.07
 // @author        rDacted
 // @description   Shows the expected Fair Fight score against targets
 // @grant         GM_xmlhttpRequest
@@ -15,13 +15,13 @@
 // @connect       absolutely-golden-airedale.edgecompute.app
 // ==/UserScript==
 
-console.log("Fair fight v2 version 1.06 starting")
+console.log("Fair fight v2 version 1.07 starting")
 
 
 // NOTE
 // This script requires a limited access api key, or a custom key generated with the following permissions
 // https://www.torn.com/preferences.php#tab=api?step=addNewKey&title=torn&user=basic,attacks,battlestats
-// 
+//
 // Your key is sent to a backend service which does the following
 // - Obtains your identity (for authentication)
 // - Obtains your battle stats
@@ -50,6 +50,8 @@ console.log("Fair fight v2 version 1.06 starting")
 // to determine what your battle score is. It's not public information, but it's also not private.
 
 var BASE_URL = "https://absolutely-golden-airedale.edgecompute.app";
+var PERFECT_FF = "https://github.com/rDacted2/fair_fight_scouter/blob/c259c12dc853c6c2991a33fe6585f2922233f643/images/lime_green_stars.gif";
+var WORST_FF = "https://github.com/rDacted2/fair_fight_scouter/blob/c259c12dc853c6c2991a33fe6585f2922233f643/images/poop.gif";
 
 var rD_xmlhttpRequest;
 var rD_setValue;
@@ -494,7 +496,7 @@ else if (window.location.href.startsWith("https://www.torn.com/factions.php")) {
                         if (match) {
                             const ff_val = match.groups.ff_val;
                             if (ff_val === "3.00") {
-                                $(this).css({ backgroundImage: `url(${BASE_URL}/static/lime_green_stars.gif)` });
+                                $(this).css({ backgroundImage: `url(${PERFECT_FF})` });
                             } else {
                                 const ff_float = parseFloat(ff_val);
                                 if (ff_float > 2.5 || isRetal) {
@@ -506,11 +508,11 @@ else if (window.location.href.startsWith("https://www.torn.com/factions.php")) {
                                 } else {
                                     // If war do poop, if chain > 10 do poop, otherwise, extra brown
                                     if ($(this).find(".war-hit").attr("title") !== "War bonus: None") {
-                                        $(this).css({ backgroundImage: `url(${BASE_URL}/static/poop.gif)` });
+                                        $(this).css({ backgroundImage: `url(${WORST_FF})` });
                                     } else {
                                         // Ignores any "#1" single digit numbers and flags any poop with double digits or more
                                         if (2 < $(this).find(".attack-number").text().length) {
-                                            $(this).css({ backgroundImage: `url(${BASE_URL}/static/poop.gif)` });
+                                            $(this).css({ backgroundImage: `url(${WORST_FF})` });
                                         } else {
                                             $(this).css({ backgroundColor: '#261d01' });
                                         }
