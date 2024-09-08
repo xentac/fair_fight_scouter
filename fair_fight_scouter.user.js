@@ -4,7 +4,7 @@
 // @match         https://www.torn.com/profiles.php?XID=*
 // @match         https://www.torn.com/loader.php?sid=attack&user2ID=*
 // @match         https://www.torn.com/factions.php*
-// @version       1.07
+// @version       1.08
 // @author        rDacted
 // @description   Shows the expected Fair Fight score against targets
 // @grant         GM_xmlhttpRequest
@@ -15,7 +15,7 @@
 // @connect       absolutely-golden-airedale.edgecompute.app
 // ==/UserScript==
 
-console.log("Fair fight v2 version 1.07 starting")
+console.log("Fair fight v2 version 1.08 starting")
 
 
 // NOTE
