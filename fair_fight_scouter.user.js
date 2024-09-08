@@ -50,8 +50,8 @@ console.log("Fair fight v2 version 1.07 starting")
 // to determine what your battle score is. It's not public information, but it's also not private.
 
 var BASE_URL = "https://absolutely-golden-airedale.edgecompute.app";
-var PERFECT_FF = "https://github.com/rDacted2/fair_fight_scouter/blob/c259c12dc853c6c2991a33fe6585f2922233f643/images/lime_green_stars.gif";
-var WORST_FF = "https://github.com/rDacted2/fair_fight_scouter/blob/c259c12dc853c6c2991a33fe6585f2922233f643/images/poop.gif";
+var PERFECT_FF = "https://raw.githubusercontent.com/rDacted2/fair_fight_scouter/main/images/lime_green_stars.gif"
+var WORST_FF = "https://raw.githubusercontent.com/rDacted2/fair_fight_scouter/main/images/poop.gif";
 
 var rD_xmlhttpRequest;
 var rD_setValue;
@@ -91,11 +91,11 @@ if (apikey[0] != '#') {
         console.log("Attempted to get " + name + " -> " + value);
         return value;
     }
-    rD_deleteValuie = function (name) {
+    rD_deleteValue = function (name) {
         console.log("Attempted to delete " + name);
         return localStorage.removeItem(name);
     }
-    rD_registerMenuCommand = function (a, b) {
+    rD_registerMenuCommand = function () {
         console.log("Disabling GM_registerMenuCommand");
     }
     rD_setValue('limited_key', apikey);
@@ -109,6 +109,7 @@ else {
 }
 
 var key = rD_getValue("limited_key", null);
+var button = null;
 
 rD_registerMenuCommand('Enter Limited API Key', () => {
     let userInput = prompt("Enter Limited API Key", rD_getValue('limited_key', ""));
@@ -208,7 +209,7 @@ function update_ff_cache(player_ids, callback) {
     var unknown_player_ids = get_cache_misses(player_ids)
 
     if (unknown_player_ids.length > 0) {
-        player_id_list = unknown_player_ids.join(",")
+        var player_id_list = unknown_player_ids.join(",")
         const url = `${BASE_URL}/api/v2/fair_fight?api_key=${key}&id=${player_id_list}`;
         //console.log(url);
 
@@ -217,7 +218,7 @@ function update_ff_cache(player_ids, callback) {
             url: url,
             onload: function (response) {
                 if (response.status == 200) {
-                    ff_response = JSON.parse(response.responseText);
+                    var ff_response = JSON.parse(response.responseText);
                     if (ff_response.success) {
                         var one_hour = 60 * 60 * 1000;
                         var expiry = Date.now() + one_hour;
@@ -261,7 +262,7 @@ function display_fair_fight(target_id) {
     try {
         cached_ff_response = JSON.parse(cached_ff_response);
     }
-    catch (e) {
+    catch {
         cached_ff_response = null;
     }
 
@@ -305,9 +306,10 @@ function set_fair_fight(ff_response) {
     var fresh = "";
 
     if (age < 24 * 60 * 60) {
+        // Pass
     }
     else if (age < 31 * 24 * 60 * 60) {
-        days = Math.round(age / (24 * 60 * 60));
+        var days = Math.round(age / (24 * 60 * 60));
         if (days == 1) {
             fresh = "(1 day old)";
         }
@@ -316,7 +318,7 @@ function set_fair_fight(ff_response) {
         }
     }
     else if (age < 365 * 24 * 60 * 60) {
-        months = Math.round(age / (31 * 24 * 60 * 60));
+        var months = Math.round(age / (31 * 24 * 60 * 60));
         if (months == 1) {
             fresh = "(1 month old)";
         }
@@ -325,7 +327,7 @@ function set_fair_fight(ff_response) {
         }
     }
     else {
-        years = Math.round(age / (365 * 24 * 60 * 60));
+        var years = Math.round(age / (365 * 24 * 60 * 60));
         if (years == 1) {
             fresh = "(1 year old)";
         }
@@ -338,7 +340,7 @@ function set_fair_fight(ff_response) {
     set_message(`Fair Fight ${ff_string} ${fresh}`);
 }
 
-function get_members(member_list) {
+function get_members() {
     var player_ids = [];
     $(".table-body > .table-row").each(function () {
         if (!$(this).find(".fallen").length) {
@@ -393,7 +395,7 @@ function apply_fair_fight_info(player_ids) {
         try {
             cached_ff_response = JSON.parse(cached_ff_response);
         }
-        catch (e) {
+        catch {
             cached_ff_response = null;
         }
 
@@ -444,7 +446,7 @@ function get_cache_misses(player_ids) {
         try {
             cached_ff_response = JSON.parse(cached_ff_response);
         }
-        catch (e) {
+        catch {
             cached_ff_response = null;
         }
 
@@ -458,7 +460,7 @@ function get_cache_misses(player_ids) {
     return unknown_player_ids;
 }
 
-const text_location = create_text_location();
+create_text_location();
 
 const match1 = window.location.href.match(/https:\/\/www.torn.com\/profiles.php\?XID=(?<target_id>\d+)/);
 const match2 = window.location.href.match(/https:\/\/www.torn.com\/loader.php\?sid=attack&user2ID=(?<target_id>\d+)/);
@@ -469,13 +471,13 @@ if (match) {
     update_ff_cache([target_id], function (target_ids) { display_fair_fight(target_ids[0]) })
 }
 else if (window.location.href.startsWith("https://www.torn.com/factions.php")) {
-    const torn_observer = new MutationObserver(function (mutations) {
+    const torn_observer = new MutationObserver(function () {
         // Find the member table - add a column if it doesn't already have one, for FF scores
         var members_list = $(".members-list")[0];
         if (members_list) {
             torn_observer.disconnect()
 
-            var player_ids = get_members(members_list);
+            var player_ids = get_members();
             update_ff_cache(player_ids, apply_fair_fight_info)
         }
     });
@@ -534,7 +536,7 @@ else if (window.location.href.startsWith("https://www.torn.com/factions.php")) {
     }
 
     if (window.location.href.startsWith("https://www.torn.com/factions.php?step=your")) {
-        const torn_observer = new MutationObserver(function (mutations) {
+        const torn_observer = new MutationObserver(function () {
             make_pretty();
         });
 
