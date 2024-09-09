@@ -1,16 +1,18 @@
-# Fair Fight Script - For [Torn](https://www.torn.com/2670953)
+# Fair Fight Scouter - For [Torn](https://www.torn.com/2670953), by [rDacted](https://www.torn.com/profiles.php?XID=2670953)
 
 # Description
 
-The Fair Fight Script shows you how difficult a fight would be between yourself and that opponent. This is shown as a value named the “Fair Fight” (FF) value which is a number which represents how your battle score relates to their battle score.
+The Fair Fight Scouter shows you how difficult a fight would be between yourself and that opponent. This is shown as a value named the “Fair Fight” (FF) value which is a number which represents how your battle score relates to their battle score.
 
    | Fair Fight Value | Expected Difficulty  |
    | :----            | :----                |
    | 1                | Extremely easy       |
    | 2                | Easy                 |
-   | 2.5-3.5          | Moderately difficuly |
+   | 2.5-3.5          | Moderately difficult |
    | 3.5-4.5          | Difficult            |
    | 4.5+             | May be impossible    |
+
+(Just make sure it's not [over 9000](https://www.youtube.com/shorts/nl7M--nfQX0))
 
 The actual difficulty you experience will be greatly affected by other factors such as how your build performs against their build, applicable buffs/debuffs and equipment used.
 
