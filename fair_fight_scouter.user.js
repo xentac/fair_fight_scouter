@@ -1,10 +1,8 @@
 // ==UserScript==
-// @name          Attack Fair Fight v2
+// @name          FF Scouter
 // @namespace     Violentmonkey Scripts
-// @match         https://www.torn.com/profiles.php?XID=*
-// @match         https://www.torn.com/loader.php?sid=attack&user2ID=*
-// @match         https://www.torn.com/factions.php*
-// @version       1.08
+// @match         https://www.torn.com/*
+// @version       1.09
 // @author        rDacted
 // @description   Shows the expected Fair Fight score against targets
 // @grant         GM_xmlhttpRequest
@@ -15,8 +13,7 @@
 // @connect       absolutely-golden-airedale.edgecompute.app
 // ==/UserScript==
 
-console.log("Fair fight v2 version 1.08 starting")
-
+console.log("FF Scouter version 1.09 starting")
 
 // NOTE
 // This script requires a limited access api key, or a custom key generated with the following permissions
@@ -469,8 +466,14 @@ if (match) {
     // We're on a profile page or an attack page - get the fair fight score
     var target_id = match.groups.target_id
     update_ff_cache([target_id], function (target_ids) { display_fair_fight(target_ids[0]) })
+
+    if (!key) {
+        set_message("Limited API key needed - click to add");
+    }
 }
 else if (window.location.href.startsWith("https://www.torn.com/factions.php")) {
+    // TODO make this optional. Checkbox?
+
     const torn_observer = new MutationObserver(function () {
         // Find the member table - add a column if it doesn't already have one, for FF scores
         var members_list = $(".members-list")[0];
@@ -486,67 +489,111 @@ else if (window.location.href.startsWith("https://www.torn.com/factions.php")) {
 
     // Make the chain hits highlight FF3.0 hits
     function make_pretty() {
-        $(".chain-attacks-list").children("li").each(function () {
-            if ($(this).hasClass("ff_processed") == false) {
-                var success = false;
-                if ($(this).find(".chain-arrow-icon").hasClass("enemy") == false) {
+        var chain_title = $(".chain-attacks-title")[0]
+        if (chain_title) {
+            var enabled = rD_getValue("chain_colour", true);
 
-                    const ff_str = $(this).find(".fair-fight").attr('title');
-                    if (ff_str) {
-                        const isRetal = $(this).find(".retaliation").attr("title") !== "Retaliation: None";
-                        const match = ff_str.match(/Fair fight: x(?<ff_val>\d.\d+)/);
-                        if (match) {
-                            const ff_val = match.groups.ff_val;
-                            if (ff_val === "3.00") {
-                                $(this).css({ backgroundImage: `url(${PERFECT_FF})` });
-                            } else {
-                                const ff_float = parseFloat(ff_val);
-                                if (ff_float > 2.5 || isRetal) {
-                                    $(this).css({ backgroundColor: '#2e5902' });
-                                } else if (ff_float > 2.0) {
-                                    $(this).css({ backgroundColor: '#575504' });
-                                } else if (ff_float > 1.3) {
-                                    $(this).css({ backgroundColor: '#574404' });
-                                } else {
-                                    // If war do poop, if chain > 10 do poop, otherwise, extra brown
-                                    if ($(this).find(".war-hit").attr("title") !== "War bonus: None") {
-                                        $(this).css({ backgroundImage: `url(${WORST_FF})` });
+            if (!$("#chain_colour_button").length) {
+                // No button exists, create one
+                var colour_button = document.createElement('div');
+                colour_button.id = "chain_colour_button";
+                colour_button.style.display = 'flex'; // Use flexbox for centering
+                colour_button.style.cursor = 'pointer'; // Change cursor to pointer
+                colour_button.addEventListener('click', () => {
+                    if (enabled) {
+                        rD_setValue("chain_colour", false);
+                    } else {
+                        rD_setValue("chain_colour", true);
+                    }
+                    // Reload page
+                    window.location.reload();
+                });
+
+                var text = "Enable colours";
+                if (enabled) {
+                    text = "Disable colours";
+                }
+                const textNode = document.createTextNode(text);
+                colour_button.appendChild(textNode);
+                chain_title.appendChild(colour_button);
+            }
+
+            if (enabled) {
+                $(".chain-attacks-list").children("li").each(function () {
+                    if ($(this).hasClass("ff_processed") == false) {
+                        var success = false;
+                        if ($(this).find(".chain-arrow-icon").hasClass("enemy") == false) {
+
+                            const ff_str = $(this).find(".fair-fight").attr('title');
+                            if (ff_str) {
+                                const isRetal = $(this).find(".retaliation").attr("title") !== "Retaliation: None";
+                                const match = ff_str.match(/Fair fight: x(?<ff_val>\d.\d+)/);
+                                if (match) {
+                                    const ff_val = match.groups.ff_val;
+                                    if (ff_val === "3.00") {
+                                        $(this).css({ backgroundImage: `url(${PERFECT_FF})` });
                                     } else {
-                                        // Ignores any "#1" single digit numbers and flags any poop with double digits or more
-                                        if (2 < $(this).find(".attack-number").text().length) {
-                                            $(this).css({ backgroundImage: `url(${WORST_FF})` });
+                                        const ff_float = parseFloat(ff_val);
+                                        if (ff_float > 2.5 || isRetal) {
+                                            $(this).css({ backgroundColor: '#2e5902' });
+                                        } else if (ff_float > 2.0) {
+                                            $(this).css({ backgroundColor: '#575504' });
+                                        } else if (ff_float > 1.3) {
+                                            $(this).css({ backgroundColor: '#574404' });
                                         } else {
-                                            $(this).css({ backgroundColor: '#261d01' });
+                                            // If war do poop, if chain > 10 do poop, otherwise, extra brown
+                                            if ($(this).find(".war-hit").attr("title") !== "War bonus: None") {
+                                                $(this).css({ backgroundImage: `url(${WORST_FF})` });
+                                            } else {
+                                                // Ignores any "#1" single digit numbers and flags any poop with double digits or more
+                                                if (2 < $(this).find(".attack-number").text().length) {
+                                                    $(this).css({ backgroundImage: `url(${WORST_FF})` });
+                                                } else {
+                                                    $(this).css({ backgroundColor: '#261d01' });
+                                                }
+                                            }
                                         }
                                     }
+                                    success = true;
                                 }
                             }
+                        } else {
                             success = true;
                         }
-                    }
-                } else {
-                    success = true;
-                }
 
-                if (success) {
-                    $(this).addClass("ff_processed");
-                }
+                        if (success) {
+                            $(this).addClass("ff_processed");
+                        }
+                    }
+                });
             }
-        });
+        }
     }
 
     if (window.location.href.startsWith("https://www.torn.com/factions.php?step=your")) {
         const torn_observer = new MutationObserver(function () {
-            make_pretty();
+            make_pretty(torn_observer);
         });
 
         torn_observer.observe(document, { attributes: false, childList: true, characterData: false, subtree: true });
     }
+    if (!key) {
+        set_message("Limited API key needed - click to add");
+    }
 }
 else {
-    console.log("Did not match against " + window.location.href);
+    // console.log("Did not match against " + window.location.href);
 }
 
-if (!key) {
-    set_message("Limited API key needed - click to add");
+if (key) {
+    const settings = $(".settings-menu > li > a > :contains(Settings)")[0].parentNode?.parentNode;
+    if (settings) {
+        const ff_benefits = settings.cloneNode(true);
+        const ff_benefits_a = $("a", ff_benefits)[0];
+        ff_benefits_a.href = `${BASE_URL}/ff_scouter/index.html?api_key=${key}`;
+        ff_benefits_a.target = "_blank";
+        $("span", ff_benefits)[0].innerText = "Scout-o-ween List";
+
+        settings.parentNode?.insertBefore(ff_benefits, settings.nextSibling);
+    }
 }
