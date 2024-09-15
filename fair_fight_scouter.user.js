@@ -2,7 +2,7 @@
 // @name          FF Scouter
 // @namespace     Violentmonkey Scripts
 // @match         https://www.torn.com/*
-// @version       1.10
+// @version       1.11
 // @author        rDacted
 // @description   Shows the expected Fair Fight score against targets
 // @grant         GM_xmlhttpRequest
@@ -13,7 +13,7 @@
 // @connect       absolutely-golden-airedale.edgecompute.app
 // ==/UserScript==
 
-console.log("FF Scouter version 1.10 starting")
+console.log("FF Scouter version 1.11 starting")
 
 // NOTE
 // This script requires a limited access api key, or a custom key generated with the following permissions
@@ -488,10 +488,10 @@ else if (window.location.href.startsWith("https://www.torn.com/factions.php")) {
     torn_observer.observe(document, { attributes: false, childList: true, characterData: false, subtree: true });
 
     // Make the chain hits highlight FF3.0 hits
+    var chain_colour_enabled = rD_getValue("chain_colour", "true");
     function make_pretty() {
         var chain_title = $(".chain-attacks-title")[0]
         if (chain_title) {
-            var enabled = rD_getValue("chain_colour", "true");
 
             if (!$("#chain_colour_button").length) {
                 // No button exists, create one
@@ -500,7 +500,7 @@ else if (window.location.href.startsWith("https://www.torn.com/factions.php")) {
                 colour_button.style.display = 'flex'; // Use flexbox for centering
                 colour_button.style.cursor = 'pointer'; // Change cursor to pointer
                 colour_button.addEventListener('click', () => {
-                    if (enabled === "true") {
+                    if (chain_colour_enabled === "true") {
                         rD_setValue("chain_colour", "false");
                     } else {
                         rD_setValue("chain_colour", "true");
@@ -510,7 +510,7 @@ else if (window.location.href.startsWith("https://www.torn.com/factions.php")) {
                 });
 
                 var text = "Enable colours";
-                if (enabled === "true") {
+                if (chain_colour_enabled === "true") {
                     text = "Disable colours";
                 }
                 const textNode = document.createTextNode(text);
@@ -518,7 +518,7 @@ else if (window.location.href.startsWith("https://www.torn.com/factions.php")) {
                 chain_title.appendChild(colour_button);
             }
 
-            if (enabled === "true") {
+            if (chain_colour_enabled === "true") {
                 $(".chain-attacks-list").children("li").each(function () {
                     if ($(this).hasClass("ff_processed") == false) {
                         var success = false;
