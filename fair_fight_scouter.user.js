@@ -85,7 +85,7 @@ if (apikey[0] != '#') {
     }
     rD_getValue = function (name, defaultValue) {
         var value = localStorage.getItem(name) ?? defaultValue;
-        console.log("Attempted to get " + name + " -> " + value);
+        //console.log("Attempted to get " + name + " -> " + value);
         return value;
     }
     rD_deleteValue = function (name) {
