@@ -1,5 +1,21 @@
 # Fair Fight Scouter - For [Torn](https://www.torn.com/2670953), by [rDacted](https://www.torn.com/profiles.php?XID=2670953)
 
+Provides a quick and easy way to gauge how difficult a fight will be with an opponent.
+
+It's very accurate as it works by comparing your battle score against a database containing battle scores of other players. If the other player has a recent (or current) score the calculated fight difficulty should be near exact.
+
+Quick installation link: [https://raw.githubusercontent.com/rDacted2/fair\_fight\_scouter/main/fair\_fight\_scouter.user.js](https://raw.githubusercontent.com/rDacted2/fair\_fight\_scouter/main/fair\_fight\_scouter.user.js)
+   
+# Table of Contents
+
+ * [Description](#description)
+ * [Installation](#installation)
+   * [Desktop Installation](#desktop)
+   * [TornPDA Installation](#tornpda)
+ * [Additional Features](#additional-features)
+ * [Frequently Asked Questions](#frequently-asked-questions)
+ * [Obligatory Warning](#obligatory-warning)
+
 # Description
 
 The Fair Fight Scouter shows you how difficult a fight would be between yourself and that opponent. This is shown as a value named the “Fair Fight” (FF) value which is a number which represents how your battle score relates to their battle score.
