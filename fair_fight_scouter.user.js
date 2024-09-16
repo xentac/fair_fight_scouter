@@ -2,7 +2,7 @@
 // @name          FF Scouter
 // @namespace     Violentmonkey Scripts
 // @match         https://www.torn.com/*
-// @version       1.11
+// @version       1.12
 // @author        rDacted
 // @description   Shows the expected Fair Fight score against targets
 // @grant         GM_xmlhttpRequest
@@ -13,7 +13,7 @@
 // @connect       absolutely-golden-airedale.edgecompute.app
 // ==/UserScript==
 
-console.log("FF Scouter version 1.11 starting")
+console.log("FF Scouter version 1.12 starting")
 
 // NOTE
 // This script requires a limited access api key, or a custom key generated with the following permissions
@@ -472,8 +472,6 @@ if (match) {
     }
 }
 else if (window.location.href.startsWith("https://www.torn.com/factions.php")) {
-    // TODO make this optional. Checkbox?
-
     const torn_observer = new MutationObserver(function () {
         // Find the member table - add a column if it doesn't already have one, for FF scores
         var members_list = $(".members-list")[0];
@@ -486,6 +484,66 @@ else if (window.location.href.startsWith("https://www.torn.com/factions.php")) {
     });
 
     torn_observer.observe(document, { attributes: false, childList: true, characterData: false, subtree: true });
+
+    function set_colours() {
+        $(".chain-attacks-list").children("li").each(function () {
+            if ($(this).hasClass("ff_processed") == false) {
+                var success = false;
+                if ($(this).find(".chain-arrow-icon").hasClass("enemy") == false) {
+
+                    const ff_str = $(this).find(".fair-fight").attr('title');
+                    if (ff_str) {
+                        const isRetal = $(this).find(".retaliation").attr("title") !== "Retaliation: None";
+                        const match = ff_str.match(/Fair fight: x(?<ff_val>\d.\d+)/);
+                        if (match) {
+                            const ff_val = match.groups.ff_val;
+                            if (ff_val === "3.00") {
+                                $(this).css({ backgroundImage: `url(${PERFECT_FF})` });
+                            } else {
+                                const ff_float = parseFloat(ff_val);
+                                if (ff_float > 2.5 || isRetal) {
+                                    $(this).css({ backgroundColor: '#2e5902' });
+                                } else if (ff_float > 2.0) {
+                                    $(this).css({ backgroundColor: '#575504' });
+                                } else if (ff_float > 1.3) {
+                                    $(this).css({ backgroundColor: '#574404' });
+                                } else {
+                                    // If war do poop, if chain > 10 do poop, otherwise, extra brown
+                                    if ($(this).find(".war-hit").attr("title") !== "War bonus: None") {
+                                        $(this).css({ backgroundImage: `url(${WORST_FF})` });
+                                    } else {
+                                        // Ignores any "#1" single digit numbers and flags any poop with double digits or more
+                                        if (2 < $(this).find(".attack-number").text().length) {
+                                            $(this).css({ backgroundImage: `url(${WORST_FF})` });
+                                        } else {
+                                            $(this).css({ backgroundColor: '#261d01' });
+                                        }
+                                    }
+                                }
+                            }
+                            success = true;
+                        }
+                    }
+                } else {
+                    success = true;
+                }
+
+                if (success) {
+                    $(this).addClass("ff_processed");
+                }
+            }
+        });
+    }
+
+    function clear_colours() {
+        $(".chain-attacks-list").children("li").each(function () {
+            if ($(this).hasClass("ff_processed")) {
+                $(this).removeClass("ff_processed");
+                $(this).css({ backgroundImage: "" });
+                $(this).css({ backgroundColor: "" });
+            }
+        });
+    }
 
     // Make the chain hits highlight FF3.0 hits
     var chain_colour_enabled = rD_getValue("chain_colour", "true");
@@ -502,70 +560,27 @@ else if (window.location.href.startsWith("https://www.torn.com/factions.php")) {
                 colour_button.addEventListener('click', () => {
                     if (chain_colour_enabled === "true") {
                         rD_setValue("chain_colour", "false");
+                        chain_colour_enabled = "false";
+                        console.log("Removing colours");
+                        clear_colours();
                     } else {
                         rD_setValue("chain_colour", "true");
+                        chain_colour_enabled = "true";
+                        console.log("Setting colours");
+                        set_colours();
                     }
-                    // Reload page
-                    window.location.reload();
                 });
 
-                var text = "Enable colours";
-                if (chain_colour_enabled === "true") {
-                    text = "Disable colours";
-                }
-                const textNode = document.createTextNode(text);
+                const textNode = document.createTextNode("Toggle colours");
+                textNode.id = "chain_colour_toggle";
                 colour_button.appendChild(textNode);
                 chain_title.appendChild(colour_button);
             }
 
             if (chain_colour_enabled === "true") {
-                $(".chain-attacks-list").children("li").each(function () {
-                    if ($(this).hasClass("ff_processed") == false) {
-                        var success = false;
-                        if ($(this).find(".chain-arrow-icon").hasClass("enemy") == false) {
-
-                            const ff_str = $(this).find(".fair-fight").attr('title');
-                            if (ff_str) {
-                                const isRetal = $(this).find(".retaliation").attr("title") !== "Retaliation: None";
-                                const match = ff_str.match(/Fair fight: x(?<ff_val>\d.\d+)/);
-                                if (match) {
-                                    const ff_val = match.groups.ff_val;
-                                    if (ff_val === "3.00") {
-                                        $(this).css({ backgroundImage: `url(${PERFECT_FF})` });
-                                    } else {
-                                        const ff_float = parseFloat(ff_val);
-                                        if (ff_float > 2.5 || isRetal) {
-                                            $(this).css({ backgroundColor: '#2e5902' });
-                                        } else if (ff_float > 2.0) {
-                                            $(this).css({ backgroundColor: '#575504' });
-                                        } else if (ff_float > 1.3) {
-                                            $(this).css({ backgroundColor: '#574404' });
-                                        } else {
-                                            // If war do poop, if chain > 10 do poop, otherwise, extra brown
-                                            if ($(this).find(".war-hit").attr("title") !== "War bonus: None") {
-                                                $(this).css({ backgroundImage: `url(${WORST_FF})` });
-                                            } else {
-                                                // Ignores any "#1" single digit numbers and flags any poop with double digits or more
-                                                if (2 < $(this).find(".attack-number").text().length) {
-                                                    $(this).css({ backgroundImage: `url(${WORST_FF})` });
-                                                } else {
-                                                    $(this).css({ backgroundColor: '#261d01' });
-                                                }
-                                            }
-                                        }
-                                    }
-                                    success = true;
-                                }
-                            }
-                        } else {
-                            success = true;
-                        }
-
-                        if (success) {
-                            $(this).addClass("ff_processed");
-                        }
-                    }
-                });
+                set_colours();
+            } else {
+                clear_colours();
             }
         }
     }
