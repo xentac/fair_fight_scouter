@@ -2,7 +2,7 @@
 // @name          FF Scouter
 // @namespace     Violentmonkey Scripts
 // @match         https://www.torn.com/*
-// @version       1.12
+// @version       1.13
 // @author        rDacted
 // @description   Shows the expected Fair Fight score against targets
 // @grant         GM_xmlhttpRequest
@@ -13,7 +13,7 @@
 // @connect       absolutely-golden-airedale.edgecompute.app
 // ==/UserScript==
 
-console.log("FF Scouter version 1.12 starting")
+console.log("FF Scouter version 1.13 starting")
 
 // NOTE
 // This script requires a limited access api key, or a custom key generated with the following permissions
@@ -607,7 +607,7 @@ if (key) {
         const ff_benefits_a = $("a", ff_benefits)[0];
         ff_benefits_a.href = `${BASE_URL}/ff_scouter/index.html?api_key=${key}`;
         ff_benefits_a.target = "_blank";
-        $("span", ff_benefits)[0].innerText = "Scout-o-ween List";
+        $("span", ff_benefits)[0].innerText = "FF Scouter Extras";
 
         settings.parentNode?.insertBefore(ff_benefits, settings.nextSibling);
     }
