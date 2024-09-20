@@ -1,5 +1,7 @@
 # Fair Fight Scouter - For [Torn](https://www.torn.com/2670953), by [rDacted](https://www.torn.com/profiles.php?XID=2670953)
 
+**Please read this document all the way though**
+  
 Provides a quick and easy way to gauge how difficult a fight will be with an opponent.
 
 It's very accurate as it works by comparing your battle score against a database containing battle scores of other players. If the other player has a recent (or current) score the calculated fight difficulty should be near exact.
@@ -127,7 +129,27 @@ The numbers can have some characters after it
 
 # Additional Features
 
-In order to encourage high-respect hits during chains (and to a lesser extent, wars) the chain page has been colour coded to highlight the FF value of each hit made.
+## Promotional extras
+
+On occasion there will be extra features available to users of FF Scouter.
+
+You can find these features by looking for the 'FF Scouter Extras' entry below the Settings entry under your profile image on the top right of the screen.
+
+<p align="center" width="100%">
+<img src="https://github.com/rDacted2/fair_fight_scouter/blob/7b0e3d9b295378cc0b50148160dab54d59763b49/images/extras.png" width="400"/>
+</p>
+
+This will bring up a new tab showing the currently available extras.
+
+This may include a list of 10,000 inactive targets for you to attach during Halloween. No need to search for targets when you have a large list you can select from!
+
+It may also include a short chain list, to demonstrate the accuracy and usefulness of a proper chain list, which you can purchase through [rDacted](https://www.torn.com/profiles.php?XID=2670953) The short chain list will have a lifespan of two weeks, and when it expires it will generate a new one automatically.
+
+## Chain support
+
+In order to encourage high-respect hits during chains (and to a lesser extent, wars) the chain page can be colour coded to highlight the FF value of each hit made.
+
+It can be disabled by clicking on the 'Toggle colours' link below the 'Recent attacks' label on that page.
 
 Hits made with a perfect 3.0 FF are highlighted with green sparkles
 Otherwise values made between 3.0 downwards are given various shades of green to brown
@@ -170,7 +192,11 @@ The main reason I suspect this is asked is because people are worried about send
 
 ## How frequently will you use my key?
 
-Your key is primarily required to pull back your attack logs and battle score. It should be used once every 10-60 minutes
+Your key is primarily required to pull back your attack logs and battle score. It should be used once every 10 minutes or so.
+
+## How do I remove my key from your server?
+
+Easy! Your key isn't retained on the server. If you want my server to stop using your key then all you need to do is uninstall FF Scouter.
 
 ## Why do you need to pull down my attack logs?
 
@@ -204,7 +230,7 @@ I could charge for it, but that would slow adoption. I’d rather make something
 
 This script requires a limited access api key, or a custom key generated with the following permissions
 [https://www.torn.com/preferences.php\#tab=api?step=addNewKey\&title=rDacted\&user=basic,attacks,battlestats](https://www.torn.com/preferences.php\#tab=api?step=addNewKey\&title=torn\&user=basic,attacks,battlestats)
-(TornPDA users won’t need to provide a key as it will use the key that it automatically provides to installed userscripts)
+(TornPDA users won’t need to provide a key as it will use the key that TornPDA automatically provides to installed userscripts)
 
 Your key is sent to a backend service which does the following
 
