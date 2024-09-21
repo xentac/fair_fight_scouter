@@ -88,7 +88,8 @@ The numbers can have some characters after it
 
 ## TornPDA
 
-1. Copy this URL into your paste buffer: [https://raw.githubusercontent.com/rDacted2/fair\_fight\_scouter/main/fair\_fight\_scouter.user.js](https://raw.githubusercontent.com/rDacted2/fair\_fight\_scouter/main/fair\_fight\_scouter.user.js)
+1. If you're reading these instructions from TornPDA then click on this link and jump to the second half of step 8: [https://raw.githubusercontent.com/rDacted2/fair\_fight\_scouter/main/fair\_fight\_scouter.user.js](https://raw.githubusercontent.com/rDacted2/fair\_fight\_scouter/main/fair\_fight\_scouter.user.js) - If not then copy the link and proceed with the next step.
+   
 2. Open TornPDA and go to settings
 
    <p align="center" width="100%">
@@ -101,31 +102,31 @@ The numbers can have some characters after it
    <img src="https://github.com/rDacted2/fair_fight_scouter/blob/762ff6695af94665d31227cbba8e4087c08d2f1d/images/2_Advanced_Browser_Settings.png" width="400"/>
    </p>
    
-5. Manage scripts
+4. Manage scripts
 
    <p align="center" width="100%">
    <img src="https://github.com/rDacted2/fair_fight_scouter/blob/762ff6695af94665d31227cbba8e4087c08d2f1d/images/3_Manage_Scripts.png" width="400"/>
    </p>
    
-7. The \+ near the top
+5. The \+ near the top
 
    <p align="center" width="100%">
    <img src="https://github.com/rDacted2/fair_fight_scouter/blob/762ff6695af94665d31227cbba8e4087c08d2f1d/images/4_Add_Script.png" width="400"/>
    </p>
 
-9. Configure
+6. Configure
 
    <p align="center" width="100%">
    <img src="https://github.com/rDacted2/fair_fight_scouter/blob/762ff6695af94665d31227cbba8e4087c08d2f1d/images/5_Configure.png" width="400"/>
    </p>
    
-11. Paste the URL into the “Remote URL” bar at the top. Press Fetch. Then once the source is loaded below, press Load
+7. Paste the URL into the “Remote URL” bar at the top. Press Fetch. Then once the source is loaded below, press Load
 
    <p align="center" width="100%">
    <img src="https://github.com/rDacted2/fair_fight_scouter/blob/762ff6695af94665d31227cbba8e4087c08d2f1d/images/6_Fetch_And_Load.png" width="400"/>
    </p>
    
-13. The script is now installed. Test it out by looking at different faction and member profiles
+8. The script is now installed. Test it out by looking at different faction and member profiles
 
 # Additional Features
 
