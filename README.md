@@ -1,13 +1,17 @@
+<link rel="stylesheet" href="style.css">
+
 # Fair Fight Scouter - For [Torn](https://www.torn.com/2670953), by [rDacted](https://www.torn.com/profiles.php?XID=2670953)
 
 **Please read this document all the way though**
-  
+
 Provides a quick and easy way to gauge how difficult a fight will be with an opponent.
 
 It's very accurate as it works by comparing your battle score against a database containing battle scores of other players. If the other player has a recent (or current) score the calculated fight difficulty should be near exact.
 
-Quick installation link: [https://raw.githubusercontent.com/rDacted2/fair\_fight\_scouter/main/fair\_fight\_scouter.user.js](https://raw.githubusercontent.com/rDacted2/fair\_fight\_scouter/main/fair\_fight\_scouter.user.js)
-   
+Quick installation links:
+ * TornPDA: [tornpda://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js](tornpda://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js)
+ * Browser: [https://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js](https://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js)
+
 # Table of Contents
 
  * [Description](#description)
@@ -39,13 +43,13 @@ By knowing the FF value of your opponent you can get an accurate estimate of how
 When installed correctly you will see the fair-fight estimate at the top of a players profile page
 
 <p align="center" width="100%">
-<img src="https://github.com/rDacted2/fair_fight_scouter/blob/762ff6695af94665d31227cbba8e4087c08d2f1d/images/profile_view.png" width="600"/>
+<img src="https://rdacted2.github.io/fair_fight_scouter/images/profile_view.png" width="600"/>
 </p>
 
 As well as a new column when looking at factions
 
 <p align="center" width="100%">
-<img src="https://github.com/rDacted2/fair_fight_scouter/blob/762ff6695af94665d31227cbba8e4087c08d2f1d/images/faction_view.png" width="400"/>
+<img src="https://rdacted2.github.io/fair_fight_scouter/images/faction_view.png" width="400"/>
 </p>
 
 The numbers indicate the fair-fight range. The number should fall into one of these categories
@@ -70,62 +74,68 @@ The numbers can have some characters after it
 ## Desktop
 
 1. Install Tampermonkey or equivalent (Firefox needs tampermonkey to work)
-2. Browse to [https://raw.githubusercontent.com/rDacted2/fair\_fight\_scouter/main/fair\_fight\_scouter.user.js](https://raw.githubusercontent.com/rDacted2/fair\_fight\_scouter/main/fair\_fight\_scouter.user.js)
+2. Browse to: [https://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js](https://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js)
 3. You should see something similar to the following:
 
 <p align="center" width="100%">
-<img src="https://github.com/rDacted2/fair_fight_scouter/blob/762ff6695af94665d31227cbba8e4087c08d2f1d/images/tamper_install.png" width="800"/>
+<img src="https://rdacted2.github.io/fair_fight_scouter/images/tamper_install.png" width="800"/>
 </p>
 
 4. Click Install
 5. Navigate to any user profile on torn, such as yourself. It should indicate that a limited API key is needed. Click and enter your key
 
 <p align="center" width="100%">
-<img src="https://github.com/rDacted2/fair_fight_scouter/blob/762ff6695af94665d31227cbba8e4087c08d2f1d/images/api_key_needed.png" width="600"/>
+<img src="https://rdacted2.github.io/fair_fight_scouter/images/api_key_needed.png" width="600"/>
 </p>
 
 6. The script is now installed. Test it out by looking at different faction and member profiles.
 
 ## TornPDA
 
-1. If you're reading these instructions from TornPDA then click on this link and jump to the second half of step 8: [https://raw.githubusercontent.com/rDacted2/fair\_fight\_scouter/main/fair\_fight\_scouter.user.js](https://raw.githubusercontent.com/rDacted2/fair\_fight\_scouter/main/fair\_fight\_scouter.user.js) - If not then copy the link and proceed with the next step.
-   
+Try this link first. Clicking it should trigger TornPDA to prompt to install the script [tornpda://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js](tornpda://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js)
+
+If that doesn't work then this second link may work instead: [tornpda://kwack.dev/script-install?scriptUrl=http%3A%2F%2Frdacted2.github.io%2Ffair_fight_scouter%2Ffair_fight_scouter.user.js&gmFix=false&override=raw](tornpda://kwack.dev/script-install?scriptUrl=http%3A%2F%2Frdacted2.github.io%2Ffair_fight_scouter%2Ffair_fight_scouter.user.js&gmFix=false&override=raw)
+
+If neither of those links work then please let rDacted know and try the following steps instead
+
+1. Copy this URL into your paste buffer: [https://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js](https://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js)
+
 2. Open TornPDA and go to settings
 
    <p align="center" width="100%">
-   <img src="https://github.com/rDacted2/fair_fight_scouter/blob/762ff6695af94665d31227cbba8e4087c08d2f1d/images/1_Settings.png" width="400"/>
+   <img src="https://rdacted2.github.io/fair_fight_scouter/images/1_Settings.png" width="400"/>
    </p>
 
 3. Advanced browser settings
 
    <p align="center" width="100%">
-   <img src="https://github.com/rDacted2/fair_fight_scouter/blob/762ff6695af94665d31227cbba8e4087c08d2f1d/images/2_Advanced_Browser_Settings.png" width="400"/>
+   <img src="https://rdacted2.github.io/fair_fight_scouter/images/2_Advanced_Browser_Settings.png" width="400"/>
    </p>
-   
+
 4. Manage scripts
 
    <p align="center" width="100%">
-   <img src="https://github.com/rDacted2/fair_fight_scouter/blob/762ff6695af94665d31227cbba8e4087c08d2f1d/images/3_Manage_Scripts.png" width="400"/>
+   <img src="https://rdacted2.github.io/fair_fight_scouter/images/3_Manage_Scripts.png" width="400"/>
    </p>
-   
+
 5. The \+ near the top
 
    <p align="center" width="100%">
-   <img src="https://github.com/rDacted2/fair_fight_scouter/blob/762ff6695af94665d31227cbba8e4087c08d2f1d/images/4_Add_Script.png" width="400"/>
+   <img src="https://rdacted2.github.io/fair_fight_scouter/images/4_Add_Script.png" width="400"/>
    </p>
 
 6. Configure
 
    <p align="center" width="100%">
-   <img src="https://github.com/rDacted2/fair_fight_scouter/blob/762ff6695af94665d31227cbba8e4087c08d2f1d/images/5_Configure.png" width="400"/>
+   <img src="https://rdacted2.github.io/fair_fight_scouter/images/5_Configure.png" width="400"/>
    </p>
-   
+
 7. Paste the URL into the “Remote URL” bar at the top. Press Fetch. Then once the source is loaded below, press Load
 
    <p align="center" width="100%">
-   <img src="https://github.com/rDacted2/fair_fight_scouter/blob/762ff6695af94665d31227cbba8e4087c08d2f1d/images/6_Fetch_And_Load.png" width="400"/>
+   <img src="https://rdacted2.github.io/fair_fight_scouter/images/6_Fetch_And_Load.png" width="400"/>
    </p>
-   
+
 8. The script is now installed. Test it out by looking at different faction and member profiles
 
 # Additional Features
@@ -137,7 +147,7 @@ On occasion there will be extra features available to users of FF Scouter.
 You can find these features by looking for the 'FF Scouter Extras' entry below the Settings entry under your profile image on the top right of the screen.
 
 <p align="center" width="100%">
-<img src="https://github.com/rDacted2/fair_fight_scouter/blob/7b0e3d9b295378cc0b50148160dab54d59763b49/images/extras.png" width="400"/>
+<img src="https://rdacted2.github.io/fair_fight_scouter/images/extras.png" width="400"/>
 </p>
 
 This will bring up a new tab showing the currently available extras.
@@ -159,19 +169,19 @@ During chains and wars, however, any hits at 1.3FF or below are given a special 
 Green Sparkles
 
 <p align="center" width="100%">
-<img src="https://github.com/rDacted2/fair_fight_scouter/blob/c259c12dc853c6c2991a33fe6585f2922233f643/images/lime_green_stars.gif" width="600">
+<img src="https://rdacted2.github.io/fair_fight_scouter/images/lime_green_stars.gif" width="600">
 </p>
 
 Poop
 
 <p align="center" width="100%">
-<img src="https://github.com/rDacted2/fair_fight_scouter/blob/c259c12dc853c6c2991a33fe6585f2922233f643/images/poop.gif" width="600">
+<img src="https://rdacted2.github.io/fair_fight_scouter/images/poop.gif" width="600">
 </p>
 
 Example chain view
 
 <p align="center" width="100%">
-<img src="https://github.com/rDacted2/fair_fight_scouter/blob/762ff6695af94665d31227cbba8e4087c08d2f1d/images/chain_example.png" width="800"/>
+<img src="https://rdacted2.github.io/fair_fight_scouter/images/chain_example.png" width="800"/>
 </p>
 
 # Frequently Asked Questions

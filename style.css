@@ -1,0 +1,44 @@
+/* Light mode styles */
+/*
+body {
+    background-color: #ffffff;
+    color: #000000;
+}
+*/
+
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #1e1e1e;
+        color: #dcdcdc;
+    }
+
+    /* Customize other elements for dark mode */
+    a {
+        color: #9cdcfe;
+    }
+
+    /* Table in dark mode */
+    table {
+        /*background-color: #252526;*/
+        background-color: #333333;
+        color: #dcdcdc;
+        border: 1px solid #444;
+        border-radius: 8px;
+    }
+
+    tbody, tr, th, td {
+        border: 1px solid #444;
+        color: #dcdcdc;
+        background-color: #333333;
+    }
+
+    .navbar, .header {
+        background-color: #252526;
+    }
+
+    table tr:hover {
+        background-color: #3a3a3a;
+    }
+}
+
