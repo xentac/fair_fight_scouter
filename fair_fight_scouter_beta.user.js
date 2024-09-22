@@ -294,6 +294,34 @@ function get_ff_string(ff_response) {
     return `${ff_low}+${suffix}`
 }
 
+function get_ff_string_short(ff_response) {
+    const ff_low = ff_response.ff_low.toFixed(2);
+    const ff_high = (ff_response.ff_high || 0).toFixed(2);
+
+    const now = Date.now() / 1000;
+    const age = now - ff_response.timestamp;
+
+    if (ff_low > 9) {
+        return 'high';
+    }
+
+    var suffix = ""
+    if (age > (14 * 24 * 60 * 60)) {
+        suffix = "?";
+    }
+
+    if (ff_low == ff_high) {
+        return `${ff_low}${suffix}`
+    }
+
+    // The space is important so the line can be split correctly
+    if (ff_low < ff_high) {
+        return `${ff_low}- ${ff_high}${suffix}`
+    }
+
+    return `${ff_low}+${suffix}`
+}
+
 function set_fair_fight(ff_response) {
     const ff_string = get_ff_string(ff_response)
 
@@ -362,7 +390,7 @@ function int_to_hex(num) {
     return num.toString(16);
 }
 
-function get_ff_colour(fair_fight) {
+function get_ff_colour_old(fair_fight) {
     // Blue ->               Green ->               Red
     // #0000FF -> #00FFFF -> #00FF00 -> #FFFF00 -> #FF0000
     //   2.0         2.5       3.0        3.5        4.0
@@ -409,6 +437,50 @@ function get_ff_colour_alternate(value) {
 
     // Return the color in hex format
     return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+}
+
+function rgbToHex(r, g, b) {
+    return '#' +
+        ((1 << 24) + (r << 16) + (g << 8) + b)
+        .toString(16)
+        .slice(1)
+        .toUpperCase(); // Convert to hex and return
+}
+
+function get_ff_colour(value) {
+    let r, g, b;
+
+    // Transition from
+    // blue - #2828c6
+    // to
+    // green - #28c628
+    // to
+    // red - #c62828
+    if (value <= 1) {
+        // Blue
+        r = 0x28;
+        g = 0x28;
+        b = 0xc6;
+    } else if (value <= 3) {
+        // Transition from blue to green
+        const t = (value - 1) / 2; // Normalize to range [0, 1]
+        r = 0x28;
+        g = Math.round(0x28 + ((0xc6-0x28) * t));
+        b = Math.round(0xc6 - ((0xc6-0x28) * t));
+    } else if (value <= 5) {
+        // Transition from green to red
+        const t = (value - 3) / 2; // Normalize to range [0, 1]
+        r = Math.round(0x28 + ((0xc6-0x28) * t));
+        g = Math.round(0xc6 - ((0xc6-0x28) * t));
+        b = 0x28;
+    } else {
+        // Red
+        r = 0xc6;
+        g = 0x28;
+        b = 0x28;
+    }
+
+    return rgbToHex(r, g, b); // Return hex value
 }
 
 function get_contrast_color(hex) {
@@ -463,13 +535,13 @@ function apply_fair_fight_info(player_ids) {
         // Lookup the fair fight score from cache
         if (fair_fights[player_id]) {
             const ff_low = fair_fights[player_id].ff_low;
-            const ff_string = get_ff_string(fair_fights[player_id])
+            const ff_string = get_ff_string_short(fair_fights[player_id])
 
             const background_colour = get_ff_colour(ff_low);
             const text_colour = get_contrast_color(background_colour);
-            console.log(text_colour);
             fair_fight_div.style.backgroundColor = background_colour;
             fair_fight_div.style.color = text_colour;
+            fair_fight_div.style.fontWeight = 'bold';
             var text = document.createTextNode(ff_string);
             fair_fight_div.appendChild(text);
         }
