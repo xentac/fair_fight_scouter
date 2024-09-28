@@ -2,7 +2,7 @@
 // @name          FF Scouter
 // @namespace     Violentmonkey Scripts
 // @match         https://www.torn.com/*
-// @version       1.14
+// @version       1.15
 // @author        rDacted
 // @description   Shows the expected Fair Fight score against targets
 // @grant         GM_xmlhttpRequest
@@ -10,11 +10,14 @@
 // @grant         GM_getValue
 // @grant         GM_deleteValue
 // @grant         GM_registerMenuCommand
+// @grant         GM_addStyle
 // @connect       absolutely-golden-airedale.edgecompute.app
 // ==/UserScript==
 
-console.log("FF Scouter version 1.14 starting")
+console.log("FF Scouter version 1.15 starting")
 
+// Website: https://rdacted2.github.io/fair_fight_scouter/
+//
 // NOTE
 // This script requires a limited access api key, or a custom key generated with the following permissions
 // https://www.torn.com/preferences.php#tab=api?step=addNewKey&title=torn&user=basic,attacks,battlestats
@@ -45,6 +48,105 @@ console.log("FF Scouter version 1.14 starting")
 // If you're concerned about sharing your battle score, note that anyone you defeat can calculate your
 // battle score by simply calculating their battle score and using the fair-fight value of your attack
 // to determine what your battle score is. It's not public information, but it's also not private.
+
+GM_addStyle(`
+    .ff-scouter-indicator {
+      position: relative;
+      display: block;
+      padding: 0;
+    }
+
+    .ff-scouter-vertical-line-low-upper {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 40%;
+      width: 2px;
+      height: 30%;
+      background-color: black;
+    }
+
+    .ff-scouter-vertical-line-low-lower {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 40%;
+      width: 2px;
+      height: 30%;
+      background-color: black;
+    }
+
+    .ff-scouter-vertical-line-high-upper {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 75%;
+      width: 2px;
+      height: 30%;
+      background-color: black;
+    }
+
+    .ff-scouter-vertical-line-high-lower {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 75%;
+      width: 2px;
+      height: 30%;
+      background-color: black;
+    }
+
+    .ff-scouter-indicator-upper {
+      content: "";
+      position: absolute;
+      overflow: hidden;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 30%;
+      background: linear-gradient(to right, #0000FF, #00FF00, #FF0000);
+      clip-path: inset(
+          0 /* top */
+          calc(100% - var(--band-width) - var(--band-percent) * (100% - var(--band-width)) / 100) /* right */
+          0 /* bottom */
+          calc(var(--band-percent) * (100% - var(--band-width)) / 100) /* left */
+          );
+      z-index: 0;
+      padding: 0;
+      pointer-events: none; /* Allow clicks to pass through */
+    }
+
+    .ff-scouter-indicator-lower {
+      content: "";
+      position: absolute;
+      overflow: hidden;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 30%;
+      background: linear-gradient(to right, #0000FF, #00FF00, #FF0000);
+      clip-path: inset(
+          0 /* top */
+          calc(100% - var(--band-width) - var(--band-percent) * (100% - var(--band-width)) / 100) /* right */
+          0 /* bottom */
+          calc(var(--band-percent) * (100% - var(--band-width)) / 100) /* left */
+          );
+      z-index: 0;
+      padding: 0;
+      pointer-events: none; /* Allow clicks to pass through */
+    }
+
+    .ff-scouter-target {
+      position: absolute;
+      transform: translateX(-50%);
+      padding: 0;
+      top: 0;
+      left: calc(var(--band-width) / 2 + var(--band-percent) * (100% - var(--band-width)) / 100);
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none; /* Allow clicks to pass through */
+    }
+`);
 
 var BASE_URL = "https://absolutely-golden-airedale.edgecompute.app";
 var PERFECT_FF = "https://raw.githubusercontent.com/rDacted2/fair_fight_scouter/main/images/lime_green_stars.gif"
@@ -382,69 +484,12 @@ function get_members() {
     return player_ids;
 }
 
-function int_to_hex(num) {
-    num = Math.round(num);
-    if (num < 16) {
-        return "0" + num.toString(16);
-    }
-    return num.toString(16);
-}
-
-function get_ff_colour_old(fair_fight) {
-    // Blue ->               Green ->               Red
-    // #0000FF -> #00FFFF -> #00FF00 -> #FFFF00 -> #FF0000
-    //   2.0         2.5       3.0        3.5        4.0
-    if (fair_fight < 2.0) {
-        return "#0000FF"
-    }
-    if (fair_fight < 2.5) {
-        return "#00" + int_to_hex((fair_fight - 2.0) * 255 * 2) + "FF";
-    }
-    if (fair_fight < 3.0) {
-        return "#00FF" + int_to_hex(255 - ((fair_fight - 2.5) * 255 * 2));
-    }
-    if (fair_fight < 3.5) {
-        return "#" + int_to_hex((fair_fight - 3.0) * 255 * 2) + "FF00";
-    }
-    if (fair_fight < 4.0) {
-        return "#FF" + int_to_hex(255 - ((fair_fight - 3.5) * 255 * 2)) + "00";
-    }
-    return "#FF0000";
-}
-
-function get_ff_colour_alternate(value) {
-    // Clamp the value to ensure it's within the expected range
-    const clampedValue = Math.max(1, Math.min(value, 5));
-
-    // Calculate the normalized value between 0 and 1
-    const normalizedValue = (clampedValue - 1) / 4; // 4 is the range from 1 to 5
-
-    let r, g, b;
-
-    if (normalizedValue <= 0.5) {
-        // Interpolating from blue to green
-        const factor = normalizedValue * 2; // Scale to [0, 2]
-        r = 0; // Red is 0
-        g = Math.floor(255 * factor); // Green increases from 0 to 255
-        b = 255; // Blue is 255
-    } else {
-        // Interpolating from green to red
-        const factor = (normalizedValue - 0.5) * 2; // Scale to [0, 2]
-        r = Math.floor(255 * factor); // Red increases from 0 to 255
-        g = 255 - Math.floor(255 * factor); // Green decreases from 255 to 0
-        b = 0; // Blue is 0
-    }
-
-    // Return the color in hex format
-    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
-}
-
 function rgbToHex(r, g, b) {
     return '#' +
         ((1 << 24) + (r << 16) + (g << 8) + b)
-        .toString(16)
-        .slice(1)
-        .toUpperCase(); // Convert to hex and return
+            .toString(16)
+            .slice(1)
+            .toUpperCase(); // Convert to hex and return
 }
 
 function get_ff_colour(value) {
@@ -465,13 +510,13 @@ function get_ff_colour(value) {
         // Transition from blue to green
         const t = (value - 1) / 2; // Normalize to range [0, 1]
         r = 0x28;
-        g = Math.round(0x28 + ((0xc6-0x28) * t));
-        b = Math.round(0xc6 - ((0xc6-0x28) * t));
+        g = Math.round(0x28 + ((0xc6 - 0x28) * t));
+        b = Math.round(0xc6 - ((0xc6 - 0x28) * t));
     } else if (value <= 5) {
         // Transition from green to red
         const t = (value - 3) / 2; // Normalize to range [0, 1]
-        r = Math.round(0x28 + ((0xc6-0x28) * t));
-        g = Math.round(0xc6 - ((0xc6-0x28) * t));
+        r = Math.round(0x28 + ((0xc6 - 0x28) * t));
+        g = Math.round(0xc6 - ((0xc6 - 0x28) * t));
         b = 0x28;
     } else {
         // Red
@@ -484,7 +529,7 @@ function get_ff_colour(value) {
 }
 
 function get_contrast_color(hex) {
-     // Convert hex to RGB
+    // Convert hex to RGB
     const r = parseInt(hex.slice(1, 3), 16);
     const g = parseInt(hex.slice(3, 5), 16);
     const b = parseInt(hex.slice(5, 7), 16);
@@ -714,6 +759,116 @@ else {
     // console.log("Did not match against " + window.location.href);
 }
 
+function get_player_id_in_element(element) {
+    const anchors = element.getElementsByTagName('a');
+
+    for (const anchor of anchors) {
+        const match = anchor.href.match(/.*XID=(?<target_id>\d+)/);
+        if (match) {
+            return match.groups.target_id;
+        }
+    }
+
+    return null;
+}
+
+function get_ff_low(target_id) {
+    var cached_ff_response = rD_getValue("" + target_id, null);
+    try {
+        cached_ff_response = JSON.parse(cached_ff_response);
+    }
+    catch {
+        cached_ff_response = null;
+    }
+
+    if (cached_ff_response) {
+        return cached_ff_response.ff_low;
+    }
+    return null;
+}
+
+function ff_to_percent(ff) {
+    // There are 3 key areas, low, medium, high
+    // Low is 1-2
+    // Medium is 2-4
+    // High is 4+
+    // If we clip high at 8 then the math becomes easy
+    // The percent is 0-40% 40-80% 80%-100%
+    const low_ff = 1.8;
+    const high_ff = 4;
+    const low_mid_percent = 40;
+    const mid_high_percent = 80;
+    ff = Math.min(ff, 8)
+    if (ff < low_ff) {
+        return (ff - 1) / (low_ff - 1) * low_mid_percent;
+    } else if (ff < high_ff) {
+        return (((ff - low_ff) / (high_ff - low_ff)) * (mid_high_percent - low_mid_percent)) + low_mid_percent;
+    } else {
+        return (((ff - high_ff) / (8 - high_ff)) * (100 - mid_high_percent)) + mid_high_percent;
+    }
+}
+
+function show_cached_values(elements) {
+    for (const [player_id, element] of elements) {
+        element.classList.add('ff-scouter-indicator');
+
+        if (!element.classList.contains('ff-scouter-vertical-line-low-upper')) {
+            const ff_low = get_ff_low(player_id);
+            if (ff_low) {
+                $(element).append($("<div>", { class: "ff-scouter-vertical-line-low-upper" }));
+                $(element).append($("<div>", { class: "ff-scouter-vertical-line-low-lower" }));
+                $(element).append($("<div>", { class: "ff-scouter-vertical-line-high-upper" }));
+                $(element).append($("<div>", { class: "ff-scouter-vertical-line-high-lower" }));
+                $(element).append($("<div>", { class: "ff-scouter-indicator-upper" }));
+                $(element).append($("<div>", { class: "ff-scouter-indicator-lower" }));
+                const img = $('<img>', {
+                    src: "https://torn.rdacted.com/static/target2.png",
+                    class: "ff-scouter-target",
+                });
+                $(element).append(img);
+
+                element.style.setProperty("--band-percent", ff_to_percent(ff_low));
+                element.style.setProperty("--band-width", "16px");
+            }
+        }
+    }
+}
+
+async function apply_ff_gauge(elements) {
+    console.log("eval");
+    // Remove elements which already have the class
+    elements = elements.filter(e => !e.classList.contains('ff-scouter-indicator'));
+    // Convert elements to a list of tuples
+    elements = elements.map(e => {
+        const player_id = get_player_id_in_element(e);
+        return [player_id, e];
+    });
+    // Remove any elements that don't have an id
+    elements = elements.filter(e => e[0]);
+
+    if (elements.length > 0) {
+        // Display cached values immediately
+        // This is also important to ensure we only iterate the list once
+        // Then update
+        // Then re-display after the update
+        show_cached_values(elements);
+        const player_ids = elements.map(e => e[0]);
+        update_ff_cache(player_ids, () => { show_cached_values(elements); });
+    }
+}
+
+// Display the FF gauge
+
+const ff_gauge_observer = new MutationObserver(async function () {
+    if (window.location.href.startsWith("https://www.torn.com/factions.php")) {
+        await apply_ff_gauge($(".member").toArray());
+    }
+});
+
+ff_gauge_observer.observe(document, { attributes: false, childList: true, characterData: false, subtree: true });
+
+
+
 if (key) {
     const settings = $(".settings-menu > li > a > :contains(Settings)")[0].parentNode?.parentNode;
     if (settings) {
@@ -726,4 +881,3 @@ if (key) {
         settings.parentNode?.insertBefore(ff_benefits, settings.nextSibling);
     }
 }
-
