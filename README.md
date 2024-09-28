@@ -14,6 +14,13 @@ Quick installation links:
  * TornPDA: [tornpda://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js](tornpda://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js)
  * Browser: [https://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js](https://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js)
 
+If you're wanting to participate in the beta test releases then these are the links you'll want:
+
+Quick installation links:
+ * TornPDA: [tornpda://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.beta.user.js](tornpda://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.beta.user.js)
+ * Browser: [https://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.beta.user.js](https://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.beta.user.js)
+
+
 # Table of Contents
 
  * [Description](#description)
