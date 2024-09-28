@@ -769,6 +769,13 @@ function get_player_id_in_element(element) {
         }
     }
 
+    if (element.nodeName.toLowerCase() === "a") {
+        const match = element.href.match(/.*XID=(?<target_id>\d+)/);
+        if (match) {
+            return match.groups.target_id;
+        }
+    }
+
     return null;
 }
 
@@ -784,6 +791,7 @@ function get_ff_low(target_id) {
     if (cached_ff_response) {
         return cached_ff_response.ff_low;
     }
+
     return null;
 }
 
@@ -811,14 +819,16 @@ function ff_to_percent(ff) {
 function show_cached_values(elements) {
     for (const [player_id, element] of elements) {
         element.classList.add('ff-scouter-indicator');
-
         if (!element.classList.contains('ff-scouter-vertical-line-low-upper')) {
+            $(element).append($("<div>", { class: "ff-scouter-vertical-line-low-upper" }));
+            $(element).append($("<div>", { class: "ff-scouter-vertical-line-low-lower" }));
+            $(element).append($("<div>", { class: "ff-scouter-vertical-line-high-upper" }));
+            $(element).append($("<div>", { class: "ff-scouter-vertical-line-high-lower" }));
+        }
+
+        if (!element.classList.contains('ff-scouter-indicator-upper')) {
             const ff_low = get_ff_low(player_id);
             if (ff_low) {
-                $(element).append($("<div>", { class: "ff-scouter-vertical-line-low-upper" }));
-                $(element).append($("<div>", { class: "ff-scouter-vertical-line-low-lower" }));
-                $(element).append($("<div>", { class: "ff-scouter-vertical-line-high-upper" }));
-                $(element).append($("<div>", { class: "ff-scouter-vertical-line-high-lower" }));
                 $(element).append($("<div>", { class: "ff-scouter-indicator-upper" }));
                 $(element).append($("<div>", { class: "ff-scouter-indicator-lower" }));
                 const img = $('<img>', {
@@ -835,7 +845,6 @@ function show_cached_values(elements) {
 }
 
 async function apply_ff_gauge(elements) {
-    console.log("eval");
     // Remove elements which already have the class
     elements = elements.filter(e => !e.classList.contains('ff-scouter-indicator'));
     // Convert elements to a list of tuples
@@ -862,6 +871,22 @@ async function apply_ff_gauge(elements) {
 const ff_gauge_observer = new MutationObserver(async function () {
     if (window.location.href.startsWith("https://www.torn.com/factions.php")) {
         await apply_ff_gauge($(".member").toArray());
+    } else if (window.location.href.startsWith("https://www.torn.com/companies.php")) {
+        await apply_ff_gauge($(".employee").toArray());
+    } else if (window.location.href.startsWith("https://www.torn.com/joblist.php")) {
+        await apply_ff_gauge($(".employee").toArray());
+    } else if (window.location.href.startsWith("https://www.torn.com/messages.php")) {
+        await apply_ff_gauge($(".name").toArray());
+    } else if (window.location.href.startsWith("https://www.torn.com/hospitalview.php")) {
+        await apply_ff_gauge($(".name").toArray());
+    } else if (window.location.href.startsWith("https://www.torn.com/bounties.php")) {
+        await apply_ff_gauge($(".target").toArray());
+        await apply_ff_gauge($(".listed").toArray());
+    } else if (window.location.href.startsWith("https://www.torn.com/forums.php")) {
+        await apply_ff_gauge($(".last-poster").toArray());
+        await apply_ff_gauge($(".starter").toArray());
+        await apply_ff_gauge($(".last-post").toArray());
+        await apply_ff_gauge($(".poster").toArray());
     }
 });
 
@@ -881,3 +906,4 @@ if (key) {
         settings.parentNode?.insertBefore(ff_benefits, settings.nextSibling);
     }
 }
+
