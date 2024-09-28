@@ -4,6 +4,8 @@
 
 **Please read this document all the way though**
 
+If this page looks broken and links don't work, make sure you're looking at it from the right address: [https://rdacted2.github.io/fair_fight_scouter](https://rdacted2.github.io/fair_fight_scouter)
+
 Provides a quick and easy way to gauge how difficult a fight will be with an opponent.
 
 It's very accurate as it works by comparing your battle score against a database containing battle scores of other players. If the other player has a recent (or current) score the calculated fight difficulty should be near exact.
