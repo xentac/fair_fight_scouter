@@ -10,15 +10,17 @@ Provides a quick and easy way to gauge how difficult a fight will be with an opp
 
 It's very accurate as it works by comparing your battle score against a database containing battle scores of other players. If the other player has a recent (or current) score the calculated fight difficulty should be near exact.
 
-Quick installation links:
- * TornPDA: [tornpda://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js](tornpda://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js)
- * Browser: [https://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js](https://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js)
+Quick installation links - try the first one and move down the list if it doesn't work. Browsers should only need the first one. Torn PDA may require a few options depending on where you're clicking from
+ * [https://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js](https://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js)
+ * [tornpda://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js](tornpda://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js)
+ * [https://kwack.dev/script-install?gmFix=false&scriptUrl=http%3A%2F%2Frdacted2.github.io%2Ffair_fight_scouter%2Ffair_fight_scouter.user.js](https://kwack.dev/script-install?gmFix=false&scriptUrl=http%3A%2F%2Frdacted2.github.io%2Ffair_fight_scouter%2Ffair_fight_scouter.user.js)
 
 If you're wanting to participate in the beta test releases then these are the links you'll want:
 
-Quick installation links:
- * TornPDA: [tornpda://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter_beta.user.js](tornpda://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter_beta.user.js)
- * Browser: [https://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter_beta.user.js](https://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter_beta.user.js)
+Quick beta installation links - again try the first one and move down if it doesn't work:
+ * [https://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter_beta.user.js](https://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter_beta.user.js)
+ * [tornpda://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter_beta.user.js](tornpda://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter_beta.user.js)
+ * [https://kwack.dev/script-install?gmFix=false&scriptUrl=http%3A%2F%2Frdacted2.github.io%2Ffair_fight_scouter%2Ffair_fight_scouter_beta.user.js](https://kwack.dev/script-install?gmFix=false&scriptUrl=http%3A%2F%2Frdacted2.github.io%2Ffair_fight_scouter%2Ffair_fight_scouter_beta.user.js)
 
 
 # Table of Contents
@@ -99,11 +101,17 @@ The numbers can have some characters after it
 
 6. The script is now installed. Test it out by looking at different faction and member profiles.
 
+### Troubleshooting
+
+If you don't see the request for a limited API key, and you're using TamperMonkey on a Chrome based browser, then you're likely affected by a tampermonkey issue which requires developer mode to be enabled. Please follow the instructions on this link to enable it: [https://www.tampermonkey.net/faq.php?locale=en#Q209](https://www.tampermonkey.net/faq.php?locale=en#Q209) Otherwise ViolentMonkey is an alternative browser extension which seems to work well for both desktop and mobile (such as kiwi browser)
+
 ## TornPDA
 
-Try this link first. Clicking it should trigger TornPDA to prompt to install the script [tornpda://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js](tornpda://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js)
+Try this link first. Clicking it should trigger TornPDA to prompt to install the script [https://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js](https://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js)
 
-If that doesn't work then this second link may work instead: [tornpda://kwack.dev/script-install?scriptUrl=http%3A%2F%2Frdacted2.github.io%2Ffair_fight_scouter%2Ffair_fight_scouter.user.js&gmFix=false&override=raw](tornpda://kwack.dev/script-install?scriptUrl=http%3A%2F%2Frdacted2.github.io%2Ffair_fight_scouter%2Ffair_fight_scouter.user.js&gmFix=false&override=raw)
+If that fails, try this link: [tornpda://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js](tornpda://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js)
+
+If that fails, try this link: [https://kwack.dev/script-install?gmFix=false&scriptUrl=http%3A%2F%2Frdacted2.github.io%2Ffair_fight_scouter%2Ffair_fight_scouter.user.js](https://kwack.dev/script-install?gmFix=false&scriptUrl=http%3A%2F%2Frdacted2.github.io%2Ffair_fight_scouter%2Ffair_fight_scouter.user.js)
 
 If neither of those links work then please let rDacted know and try the following steps instead
 
