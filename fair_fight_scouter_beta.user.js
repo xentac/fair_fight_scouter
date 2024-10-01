@@ -2,7 +2,7 @@
 // @name          FF Scouter
 // @namespace     Violentmonkey Scripts
 // @match         https://www.torn.com/*
-// @version       1.18
+// @version       1.19
 // @author        rDacted
 // @description   Shows the expected Fair Fight score against targets
 // @grant         GM_xmlhttpRequest
@@ -14,7 +14,7 @@
 // @connect       absolutely-golden-airedale.edgecompute.app
 // ==/UserScript==
 
-console.log("FF Scouter version 1.18 starting")
+console.log("FF Scouter version 1.19 starting")
 
 // Website: https://rdacted2.github.io/fair_fight_scouter/
 //
@@ -65,26 +65,27 @@ GM_addStyle(`
       width: 2px;
       height: 30%;
       background-color: black;
+      margin-left: -1px;
     }
 
     .ff-scouter-vertical-line-low-upper {
       top: 0;
-      left: 33%;
+      left: calc(var(--arrow-width) / 2 + 33 * (100% - var(--arrow-width)) / 100);
     }
 
     .ff-scouter-vertical-line-low-lower {
       bottom: 0;
-      left: 33%;
+      left: calc(var(--arrow-width) / 2 + 33 * (100% - var(--arrow-width)) / 100);
     }
 
     .ff-scouter-vertical-line-high-upper {
       top: 0;
-      left: 66%;
-    }
+      left: calc(var(--arrow-width) / 2 + 66 * (100% - var(--arrow-width)) / 100);
+}
 
     .ff-scouter-vertical-line-high-lower {
       bottom: 0;
-      left: 66%;
+      left: calc(var(--arrow-width) / 2 + 66 * (100% - var(--arrow-width)) / 100);
     }
 
     .ff-scouter-arrow {
@@ -768,13 +769,16 @@ function ff_to_percent(ff) {
     const low_mid_percent = 33;
     const mid_high_percent = 66;
     ff = Math.min(ff, 8)
+    var percent;
     if (ff < low_ff) {
-        return (ff - 1) / (low_ff - 1) * low_mid_percent;
+        percent = (ff - 1) / (low_ff - 1) * low_mid_percent;
     } else if (ff < high_ff) {
-        return (((ff - low_ff) / (high_ff - low_ff)) * (mid_high_percent - low_mid_percent)) + low_mid_percent;
+        percent = (((ff - low_ff) / (high_ff - low_ff)) * (mid_high_percent - low_mid_percent)) + low_mid_percent;
     } else {
-        return (((ff - high_ff) / (8 - high_ff)) * (100 - mid_high_percent)) + mid_high_percent;
+        percent = (((ff - high_ff) / (8 - high_ff)) * (100 - mid_high_percent)) + mid_high_percent;
     }
+
+    return percent;
 }
 
 function show_cached_values(elements) {
