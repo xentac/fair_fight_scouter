@@ -2,7 +2,7 @@
 // @name          FF Scouter
 // @namespace     Violentmonkey Scripts
 // @match         https://www.torn.com/*
-// @version       1.17
+// @version       1.18
 // @author        rDacted
 // @description   Shows the expected Fair Fight score against targets
 // @grant         GM_xmlhttpRequest
@@ -14,7 +14,7 @@
 // @connect       absolutely-golden-airedale.edgecompute.app
 // ==/UserScript==
 
-console.log("FF Scouter version 1.17 starting")
+console.log("FF Scouter version 1.18 starting")
 
 // Website: https://rdacted2.github.io/fair_fight_scouter/
 //
@@ -56,93 +56,45 @@ GM_addStyle(`
       padding: 0;
     }
 
-    .ff-scouter-vertical-line-low-upper {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 40%;
-      width: 2px;
-      height: 30%;
-      background-color: black;
-    }
-
-    .ff-scouter-vertical-line-low-lower {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 40%;
-      width: 2px;
-      height: 30%;
-      background-color: black;
-    }
-
-    .ff-scouter-vertical-line-high-upper {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 75%;
-      width: 2px;
-      height: 30%;
-      background-color: black;
-    }
-
+    .ff-scouter-vertical-line-low-upper,
+    .ff-scouter-vertical-line-low-lower,
+    .ff-scouter-vertical-line-high-upper,
     .ff-scouter-vertical-line-high-lower {
       content: '';
       position: absolute;
-      bottom: 0;
-      left: 75%;
       width: 2px;
       height: 30%;
       background-color: black;
     }
 
-    .ff-scouter-indicator-upper {
-      content: "";
-      position: absolute;
-      overflow: hidden;
+    .ff-scouter-vertical-line-low-upper {
       top: 0;
-      left: 0;
-      width: 100%;
-      height: 30%;
-      background: linear-gradient(to right, #0000FF, #00FF00, #FF0000);
-      clip-path: inset(
-          0 /* top */
-          calc(100% - var(--band-width) - var(--band-percent) * (100% - var(--band-width)) / 100) /* right */
-          0 /* bottom */
-          calc(var(--band-percent) * (100% - var(--band-width)) / 100) /* left */
-          );
-      z-index: 0;
-      padding: 0;
-      pointer-events: none; /* Allow clicks to pass through */
+      left: 33%;
     }
 
-    .ff-scouter-indicator-lower {
-      content: "";
-      position: absolute;
-      overflow: hidden;
+    .ff-scouter-vertical-line-low-lower {
       bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 30%;
-      background: linear-gradient(to right, #0000FF, #00FF00, #FF0000);
-      clip-path: inset(
-          0 /* top */
-          calc(100% - var(--band-width) - var(--band-percent) * (100% - var(--band-width)) / 100) /* right */
-          0 /* bottom */
-          calc(var(--band-percent) * (100% - var(--band-width)) / 100) /* left */
-          );
-      z-index: 0;
-      padding: 0;
-      pointer-events: none; /* Allow clicks to pass through */
+      left: 33%;
     }
 
-    .ff-scouter-target {
+    .ff-scouter-vertical-line-high-upper {
+      top: 0;
+      left: 66%;
+    }
+
+    .ff-scouter-vertical-line-high-lower {
+      bottom: 0;
+      left: 66%;
+    }
+
+    .ff-scouter-arrow {
       position: absolute;
-      transform: translateX(-50%);
+      transform: translate(-50%, -50%);
       padding: 0;
       top: 0;
-      left: calc(var(--band-width) / 2 + var(--band-percent) * (100% - var(--band-width)) / 100);
-      height: 100%;
+      left: calc(var(--arrow-width) / 2 + var(--band-percent) * (100% - var(--arrow-width)) / 100);
+      /*height: 40%;*/
+      width: var(--arrow-width);
       object-fit: cover;
       pointer-events: none; /* Allow clicks to pass through */
     }
@@ -151,6 +103,9 @@ GM_addStyle(`
 var BASE_URL = "https://absolutely-golden-airedale.edgecompute.app";
 var PERFECT_FF = "https://raw.githubusercontent.com/rDacted2/fair_fight_scouter/main/images/lime_green_stars.gif"
 var WORST_FF = "https://raw.githubusercontent.com/rDacted2/fair_fight_scouter/main/images/poop.gif";
+var BLUE_ARROW = "https://raw.githubusercontent.com/rDacted2/fair_fight_scouter/main/images/blue-arrow.svg";
+var GREEN_ARROW = "https://raw.githubusercontent.com/rDacted2/fair_fight_scouter/main/images/green-arrow.svg";
+var RED_ARROW = "https://raw.githubusercontent.com/rDacted2/fair_fight_scouter/main/images/red-arrow.svg";
 
 var rD_xmlhttpRequest;
 var rD_setValue;
@@ -760,6 +715,12 @@ else {
 }
 
 function get_player_id_in_element(element) {
+    // Quick shortcut
+    const match = element.parentElement.href?.match(/.*XID=(?<target_id>\d+)/);
+    if (match) {
+        return match.groups.target_id;
+    }
+
     const anchors = element.getElementsByTagName('a');
 
     for (const anchor of anchors) {
@@ -801,11 +762,11 @@ function ff_to_percent(ff) {
     // Medium is 2-4
     // High is 4+
     // If we clip high at 8 then the math becomes easy
-    // The percent is 0-40% 40-80% 80%-100%
-    const low_ff = 1.8;
+    // The percent is 0-33% 33-66% 66%-100%
+    const low_ff = 2;
     const high_ff = 4;
-    const low_mid_percent = 40;
-    const mid_high_percent = 80;
+    const low_mid_percent = 33;
+    const mid_high_percent = 66;
     ff = Math.min(ff, 8)
     if (ff < low_ff) {
         return (ff - 1) / (low_ff - 1) * low_mid_percent;
@@ -819,26 +780,39 @@ function ff_to_percent(ff) {
 function show_cached_values(elements) {
     for (const [player_id, element] of elements) {
         element.classList.add('ff-scouter-indicator');
-        if (!element.classList.contains('ff-scouter-vertical-line-low-upper')) {
+        if (!element.classList.contains('indicator-lines')) {
+            element.classList.add('indicator-lines');
+            // Ugly - does removing this break anything?
+            element.classList.remove("small");
+            element.classList.remove("big");
+
             $(element).append($("<div>", { class: "ff-scouter-vertical-line-low-upper" }));
             $(element).append($("<div>", { class: "ff-scouter-vertical-line-low-lower" }));
             $(element).append($("<div>", { class: "ff-scouter-vertical-line-high-upper" }));
             $(element).append($("<div>", { class: "ff-scouter-vertical-line-high-lower" }));
         }
 
-        if (!element.classList.contains('ff-scouter-indicator-upper')) {
+        if (!element.classList.contains('indicator-band')) {
+            element.classList.add('indicator-band');
             const ff_low = get_ff_low(player_id);
             if (ff_low) {
-                $(element).append($("<div>", { class: "ff-scouter-indicator-upper" }));
-                $(element).append($("<div>", { class: "ff-scouter-indicator-lower" }));
+                const percent = ff_to_percent(ff_low);
+                var arrow;
+                if (percent < 33) {
+                    arrow = BLUE_ARROW;
+                } else if (percent < 66) {
+                    arrow = GREEN_ARROW;
+                } else {
+                    arrow = RED_ARROW;
+                }
                 const img = $('<img>', {
-                    src: "https://torn.rdacted.com/static/target2.png",
-                    class: "ff-scouter-target",
+                    src: arrow,
+                    class: "ff-scouter-arrow",
                 });
                 $(element).append(img);
 
-                element.style.setProperty("--band-percent", ff_to_percent(ff_low));
-                element.style.setProperty("--band-width", "16px");
+                element.style.setProperty("--band-percent", percent);
+                element.style.setProperty("--arrow-width", "20px");
             }
         }
     }
@@ -869,31 +843,35 @@ async function apply_ff_gauge(elements) {
 // Display the FF gauge
 
 const ff_gauge_observer = new MutationObserver(async function () {
-    if (window.location.href.startsWith("https://www.torn.com/factions.php")) {
-        await apply_ff_gauge($(".member").toArray());
-    } else if (window.location.href.startsWith("https://www.torn.com/companies.php")) {
-        await apply_ff_gauge($(".employee").toArray());
-    } else if (window.location.href.startsWith("https://www.torn.com/joblist.php")) {
-        await apply_ff_gauge($(".employee").toArray());
-    } else if (window.location.href.startsWith("https://www.torn.com/messages.php")) {
-        await apply_ff_gauge($(".name").toArray());
-    } else if (window.location.href.startsWith("https://www.torn.com/index.php")) {
-        await apply_ff_gauge($(".name").toArray());
-    } else if (window.location.href.startsWith("https://www.torn.com/hospitalview.php")) {
-        await apply_ff_gauge($(".name").toArray());
-    } else if (window.location.href.startsWith("https://www.torn.com/bounties.php")) {
-        await apply_ff_gauge($(".target").toArray());
-        await apply_ff_gauge($(".listed").toArray());
-    } else if (window.location.href.startsWith("https://www.torn.com/forums.php")) {
-        await apply_ff_gauge($(".last-poster").toArray());
-        await apply_ff_gauge($(".starter").toArray());
-        await apply_ff_gauge($(".last-post").toArray());
-        await apply_ff_gauge($(".poster").toArray());
+    var honor_bars = $(".honor-text-wrap").toArray();
+    if (honor_bars.length > 0) {
+        await apply_ff_gauge($(".honor-text-wrap").toArray());
+    } else {
+        if (window.location.href.startsWith("https://www.torn.com/factions.php")) {
+            await apply_ff_gauge($(".member").toArray());
+        } else if (window.location.href.startsWith("https://www.torn.com/companies.php")) {
+            await apply_ff_gauge($(".employee").toArray());
+        } else if (window.location.href.startsWith("https://www.torn.com/joblist.php")) {
+            await apply_ff_gauge($(".employee").toArray());
+        } else if (window.location.href.startsWith("https://www.torn.com/messages.php")) {
+            await apply_ff_gauge($(".name").toArray());
+        } else if (window.location.href.startsWith("https://www.torn.com/index.php")) {
+            await apply_ff_gauge($(".name").toArray());
+        } else if (window.location.href.startsWith("https://www.torn.com/hospitalview.php")) {
+            await apply_ff_gauge($(".name").toArray());
+        } else if (window.location.href.startsWith("https://www.torn.com/bounties.php")) {
+            await apply_ff_gauge($(".target").toArray());
+            await apply_ff_gauge($(".listed").toArray());
+        } else if (window.location.href.startsWith("https://www.torn.com/forums.php")) {
+            await apply_ff_gauge($(".last-poster").toArray());
+            await apply_ff_gauge($(".starter").toArray());
+            await apply_ff_gauge($(".last-post").toArray());
+            await apply_ff_gauge($(".poster").toArray());
+        }
     }
 });
 
 ff_gauge_observer.observe(document, { attributes: false, childList: true, characterData: false, subtree: true });
-
 
 
 if (key) {
