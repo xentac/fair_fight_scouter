@@ -2,7 +2,7 @@
 // @name          FF Scouter
 // @namespace     Violentmonkey Scripts
 // @match         https://www.torn.com/*
-// @version       1.19
+// @version       1.20
 // @author        rDacted
 // @description   Shows the expected Fair Fight score against targets
 // @grant         GM_xmlhttpRequest
@@ -14,7 +14,7 @@
 // @connect       absolutely-golden-airedale.edgecompute.app
 // ==/UserScript==
 
-console.log("FF Scouter version 1.19 starting")
+console.log("FF Scouter version 1.20 starting")
 
 // Website: https://rdacted2.github.io/fair_fight_scouter/
 //
@@ -164,7 +164,7 @@ else {
 }
 
 var key = rD_getValue("limited_key", null);
-var button = null;
+var info_line = null;
 
 rD_registerMenuCommand('Enter Limited API Key', () => {
     let userInput = prompt("Enter Limited API Key", rD_getValue('limited_key', ""));
@@ -210,11 +210,11 @@ function force_update() {
 
 
 function create_text_location() {
-    button = document.createElement('div');
-    button.id = "battleScoreKeyPanel";
-    button.style.display = 'flex'; // Use flexbox for centering
-    button.style.cursor = 'pointer'; // Change cursor to pointer
-    button.addEventListener('click', () => {
+    info_line = document.createElement('div');
+    info_line.id = "battleScoreKeyPanel";
+    info_line.style.display = 'flex'; // Use flexbox for centering
+    info_line.style.cursor = 'pointer'; // Change cursor to pointer
+    info_line.addEventListener('click', () => {
         if (key === null) {
             const limited_key = prompt("Enter Limited API Key", rD_getValue('limited_key', ""));
             if (limited_key) {
@@ -231,27 +231,27 @@ function create_text_location() {
 
     var h4 = $("h4")[0]
     if (h4.textContent === "Attacking") {
-        h4.parentNode.parentNode.after(button);
+        h4.parentNode.parentNode.after(info_line);
     } else {
-        h4.after(button);
+        h4.after(info_line);
     }
 
-    return button;
+    return info_line;
 }
 
 function set_message(message, error = false) {
-    while (button.firstChild) {
-        button.removeChild(button.firstChild);
+    while (info_line.firstChild) {
+        info_line.removeChild(info_line.firstChild);
     }
 
     const textNode = document.createTextNode(message);
     if (error) {
-        button.style.color = "red";
+        info_line.style.color = "red";
     }
     else {
-        button.style.color = "";
+        info_line.style.color = "";
     }
-    button.appendChild(textNode);
+    info_line.appendChild(textNode);
 }
 
 function update_ff_cache(player_ids, callback) {
@@ -716,7 +716,6 @@ else {
 }
 
 function get_player_id_in_element(element) {
-    // Quick shortcut
     const match = element.parentElement.href?.match(/.*XID=(?<target_id>\d+)/);
     if (match) {
         return match.groups.target_id;
@@ -739,6 +738,33 @@ function get_player_id_in_element(element) {
     }
 
     return null;
+}
+
+function add_ff_to_title(element, ff) {
+    const match = element.parentElement.href?.match(/.*XID=(?<target_id>\d+)/);
+    if (match) {
+        element.parentElement.title += ` FF${ff}`;
+        return;
+    }
+
+    const anchors = element.getElementsByTagName('a');
+
+    for (const anchor of anchors) {
+        const match = anchor.href.match(/.*XID=(?<target_id>\d+)/);
+        if (match) {
+            anchor.title += ` FF${ff}`;
+            return;
+        }
+    }
+
+    if (element.nodeName.toLowerCase() === "a") {
+        const match = element.href.match(/.*XID=(?<target_id>\d+)/);
+        if (match) {
+            element.title += ` FF${ff}`;
+            return;
+        }
+    }
+
 }
 
 function get_ff_low(target_id) {
@@ -789,6 +815,7 @@ function show_cached_values(elements) {
             // Ugly - does removing this break anything?
             element.classList.remove("small");
             element.classList.remove("big");
+            element.style.setProperty("--arrow-width", "20px");
 
             $(element).append($("<div>", { class: "ff-scouter-vertical-line-low-upper" }));
             $(element).append($("<div>", { class: "ff-scouter-vertical-line-low-lower" }));
@@ -800,6 +827,8 @@ function show_cached_values(elements) {
             element.classList.add('indicator-band');
             const ff_low = get_ff_low(player_id);
             if (ff_low) {
+                add_ff_to_title(element, ff_low);
+
                 const percent = ff_to_percent(ff_low);
                 var arrow;
                 if (percent < 33) {
@@ -816,7 +845,6 @@ function show_cached_values(elements) {
                 $(element).append(img);
 
                 element.style.setProperty("--band-percent", percent);
-                element.style.setProperty("--arrow-width", "20px");
             }
         }
     }
@@ -871,6 +899,8 @@ const ff_gauge_observer = new MutationObserver(async function () {
             await apply_ff_gauge($(".starter").toArray());
             await apply_ff_gauge($(".last-post").toArray());
             await apply_ff_gauge($(".poster").toArray());
+        } else if (window.location.href.startsWith("https://www.torn.com/page.php?sid=hof")) {
+            await apply_ff_gauge($('[class^="userInfoBox__"]').toArray());
         }
     }
 });
@@ -890,4 +920,3 @@ if (key) {
         settings.parentNode?.insertBefore(ff_benefits, settings.nextSibling);
     }
 }
-
