@@ -2,7 +2,7 @@
 // @name          FF Scouter
 // @namespace     Violentmonkey Scripts
 // @match         https://www.torn.com/*
-// @version       1.21
+// @version       1.22
 // @author        rDacted
 // @description   Shows the expected Fair Fight score against targets
 // @grant         GM_xmlhttpRequest
@@ -14,7 +14,7 @@
 // @connect       absolutely-golden-airedale.edgecompute.app
 // ==/UserScript==
 
-const FF_VERSION = 1.21;
+const FF_VERSION = 1.22;
 
 // Website: https://rdacted2.github.io/fair_fight_scouter/
 //
@@ -271,6 +271,8 @@ if (!bodyElement.hasClass("ff-scouter-run-once")) {
         var unknown_player_ids = get_cache_misses(player_ids)
 
         if (unknown_player_ids.length > 0) {
+            console.log(`Refreshing cache for ${unknown_player_ids.length} ids`);
+
             var player_id_list = unknown_player_ids.join(",")
             const url = `${BASE_URL}/api/v2/fair_fight?api_key=${key}&id=${player_id_list}`;
             //console.log(url);
@@ -808,28 +810,26 @@ if (!bodyElement.hasClass("ff-scouter-run-once")) {
                 $(element).append($("<div>", { class: "ff-scouter-vertical-line-high-lower" }));
             }
 
-            if (!element.classList.contains('indicator-band')) {
-                const ff_low = get_ff_low(player_id);
-                if (ff_low) {
-                    element.classList.add('indicator-band');
+            const ff_low = get_ff_low(player_id);
+            if (ff_low) {
+                const percent = ff_to_percent(ff_low);
+                element.style.setProperty("--band-percent", percent);
 
-                    const percent = ff_to_percent(ff_low);
-                    var arrow;
-                    if (percent < 33) {
-                        arrow = BLUE_ARROW;
-                    } else if (percent < 66) {
-                        arrow = GREEN_ARROW;
-                    } else {
-                        arrow = RED_ARROW;
-                    }
-                    const img = $('<img>', {
-                        src: arrow,
-                        class: "ff-scouter-arrow",
-                    });
-                    $(element).append(img);
+                $(element).find('.ff-scouter-arrow').remove();
 
-                    element.style.setProperty("--band-percent", percent);
+                var arrow;
+                if (percent < 33) {
+                    arrow = BLUE_ARROW;
+                } else if (percent < 66) {
+                    arrow = GREEN_ARROW;
+                } else {
+                    arrow = RED_ARROW;
                 }
+                const img = $('<img>', {
+                    src: arrow,
+                    class: "ff-scouter-arrow",
+                });
+                $(element).append(img);
             }
         }
     }
@@ -856,7 +856,27 @@ if (!bodyElement.hasClass("ff-scouter-run-once")) {
         }
     }
 
-    // Display the FF gauge
+    async function apply_to_mini_profile(mini) {
+        // Get the user id, and the details
+        // Then in profile-container.description append a new span with the text. Win
+        const player_id = get_player_id_in_element(mini);
+        if (player_id) {
+            const response = get_fair_fight_response(player_id);
+            if (response) {
+                // Remove any existing elements
+                $(mini).find('.ff-scouter-mini-ff').remove();
+
+                const message = get_detailed_message(response);
+
+                const description = $(mini).find('.description');
+                const desc = $('<span></span>', {
+                    class: "ff-scouter-mini-ff",
+                });
+                desc.text(message);
+                $(description).append(desc);
+            }
+        }
+    }
 
     const ff_gauge_observer = new MutationObserver(async function () {
         var honor_bars = $(".honor-text-wrap").toArray();
@@ -895,19 +915,10 @@ if (!bodyElement.hasClass("ff-scouter-run-once")) {
             for (const mini of mini_profiles) {
                 if (!mini.classList.contains('ff-processed')) {
                     mini.classList.add('ff-processed');
-                    // Get the user id, and the details
-                    // Then in profile-container.description append a new span with the text. Win
-                    const player_id = get_player_id_in_element(mini);
-                    if (player_id) {
-                        const response = get_fair_fight_response(player_id);
-                        if (response) {
-                            const message = get_detailed_message(response);
 
-                            const description = $(mini).find('.description');
-                            const desc = $('<span>').text = message;
-                            $(description).append(desc);
-                        }
-                    }
+                    const player_id = get_player_id_in_element(mini);
+                    apply_to_mini_profile(mini);
+                    update_ff_cache([player_id], () => { apply_to_mini_profile(mini); });
                 }
             }
         }
