@@ -681,7 +681,7 @@ if (!bodyElement.hasClass("ff-scouter-run-once")) {
         }
 
         // Make the chain hits highlight FF3.0 hits
-        var chain_colour_enabled = rD_getValue("chain_colour", "true");
+        var chain_colour_enabled = rD_getValue("chain_colour", "false");
         function make_pretty() {
             var chain_title = $(".chain-attacks-title")[0]
             if (chain_title) {
