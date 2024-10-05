@@ -80,6 +80,26 @@ The numbers can have some characters after it
 * A plus with a question mark (+?)
   * Indicates that only the lower bound is known, and the player battle score is over 2 weeks old.
 
+Additionally wherever you find a honor bar you may also find an arrow indicating the Fair-Fight score for that individual.
+
+<p align="center" width="100%">
+<img src="https://rdacted2.github.io/fair_fight_scouter/images/honorview_1.png"/>
+</p>
+
+The arrow points to three different regions of the honorbar: easy, medium and hard. The regions are separated by small black bars.
+
+<p align="center" width="100%">
+<img src="https://rdacted2.github.io/fair_fight_scouter/images/honorview_2.png"/>
+</p>
+
+Long-pressing on the honor bar will bring up a mini-profile, and the fair-fight details have been added there too
+
+<p align="center" width="100%">
+<img src="https://rdacted2.github.io/fair_fight_scouter/images/mini.png"/>
+</p>
+
+Viewing the information in the mini profile will also show you how fresh the data is - so you can make a determination for how correct the value is likely to be.
+
 # Installation
 
 ## Desktop
