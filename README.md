@@ -10,6 +10,8 @@ Provides a quick and easy way to gauge how difficult a fight will be with an opp
 
 It's very accurate as it works by comparing your battle score against a database containing battle scores of other players. If the other player has a recent (or current) score the calculated fight difficulty should be near exact.
 
+Discord server: [Torn Collective](https://discord.gg/NGXJzvn2aZ)
+
 Quick installation links - try the first one and move down the list if it doesn't work. Browsers should only need the first one. Torn PDA may require a few options depending on where you're clicking from
  * [https://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js](https://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js)
  * [tornpda://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js](tornpda://rdacted2.github.io/fair_fight_scouter/fair_fight_scouter.user.js)
