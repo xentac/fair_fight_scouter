@@ -2,7 +2,7 @@
 // @name          FF Scouter
 // @namespace     Violentmonkey Scripts
 // @match         https://www.torn.com/*
-// @version       1.23
+// @version       1.24
 // @author        rDacted
 // @description   Shows the expected Fair Fight score against targets
 // @grant         GM_xmlhttpRequest
@@ -14,7 +14,7 @@
 // @connect       absolutely-golden-airedale.edgecompute.app
 // ==/UserScript==
 
-const FF_VERSION = 1.23;
+const FF_VERSION = 1.24;
 
 // Website: https://rdacted2.github.io/fair_fight_scouter/
 //
