@@ -2,7 +2,7 @@
 // @name          FF Scouter
 // @namespace     Violentmonkey Scripts
 // @match         https://www.torn.com/*
-// @version       1.24
+// @version       1.25
 // @author        rDacted
 // @description   Shows the expected Fair Fight score against targets
 // @grant         GM_xmlhttpRequest
@@ -14,7 +14,7 @@
 // @connect       absolutely-golden-airedale.edgecompute.app
 // ==/UserScript==
 
-const FF_VERSION = 1.24;
+const FF_VERSION = 1.25;
 
 // Website: https://rdacted2.github.io/fair_fight_scouter/
 //
@@ -894,6 +894,8 @@ if (!bodyElement.hasClass("ff-scouter-run-once")) {
             } else if (window.location.href.startsWith("https://www.torn.com/index.php")) {
                 await apply_ff_gauge($(".name").toArray());
             } else if (window.location.href.startsWith("https://www.torn.com/hospitalview.php")) {
+                await apply_ff_gauge($(".name").toArray());
+            } else if (window.location.href.startsWith("https://www.torn.com/page.php?sid=UserList")) {
                 await apply_ff_gauge($(".name").toArray());
             } else if (window.location.href.startsWith("https://www.torn.com/bounties.php")) {
                 await apply_ff_gauge($(".target").toArray());
