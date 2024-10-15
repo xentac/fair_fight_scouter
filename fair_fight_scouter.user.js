@@ -2,7 +2,7 @@
 // @name          FF Scouter
 // @namespace     Violentmonkey Scripts
 // @match         https://www.torn.com/*
-// @version       1.25
+// @version       1.26
 // @author        rDacted
 // @description   Shows the expected Fair Fight score against targets
 // @grant         GM_xmlhttpRequest
@@ -14,7 +14,7 @@
 // @connect       absolutely-golden-airedale.edgecompute.app
 // ==/UserScript==
 
-const FF_VERSION = 1.25;
+const FF_VERSION = 1.26;
 
 // Website: https://rdacted2.github.io/fair_fight_scouter/
 //
@@ -50,10 +50,11 @@ const FF_VERSION = 1.25;
 // to determine what your battle score is. It's not public information, but it's also not private.
 
 // Ensure this code can only ever run once in any page
-var bodyElement = $("body");
-
-if (!bodyElement.hasClass("ff-scouter-run-once")) {
-    bodyElement.addClass("ff-scouter-run-once");
+let singleton = document.getElementById('ff-scouter-run-once');
+if (!singleton) {
+    singleton = document.createElement("div");
+    singleton.id = "ff-scounter-run-once";
+    document.body.appendChild(singleton);
 
     console.log(`FF Scouter version ${FF_VERSION} starting`);
     GM_addStyle(`
