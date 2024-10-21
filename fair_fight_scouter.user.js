@@ -2,7 +2,7 @@
 // @name          FF Scouter
 // @namespace     Violentmonkey Scripts
 // @match         https://www.torn.com/*
-// @version       1.26
+// @version       1.28
 // @author        rDacted
 // @description   Shows the expected Fair Fight score against targets
 // @grant         GM_xmlhttpRequest
@@ -14,7 +14,7 @@
 // @connect       absolutely-golden-airedale.edgecompute.app
 // ==/UserScript==
 
-const FF_VERSION = 1.26;
+const FF_VERSION = 1.28;
 
 // Website: https://rdacted2.github.io/fair_fight_scouter/
 //
@@ -52,10 +52,6 @@ const FF_VERSION = 1.26;
 // Ensure this code can only ever run once in any page
 let singleton = document.getElementById('ff-scouter-run-once');
 if (!singleton) {
-    singleton = document.createElement("div");
-    singleton.id = "ff-scounter-run-once";
-    document.body.appendChild(singleton);
-
     console.log(`FF Scouter version ${FF_VERSION} starting`);
     GM_addStyle(`
         .ff-scouter-indicator {
@@ -934,6 +930,7 @@ if (!singleton) {
         const settings = $(".settings-menu > li > a > :contains(Settings)")[0].parentNode?.parentNode;
         if (settings) {
             const ff_benefits = settings.cloneNode(true);
+            ff_benefits.id = "ff-scouter-run-once";
             const ff_benefits_a = $("a", ff_benefits)[0];
             ff_benefits_a.href = `${BASE_URL}/ff_scouter/index.html?api_key=${key}`;
             ff_benefits_a.target = "_blank";
