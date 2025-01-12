@@ -12,6 +12,8 @@ It's very accurate as it works by comparing your battle score against a database
 
 **NOTE** This script has been integrated into TornTools. If you have TornTools you won't need this script - just enable FF Scouter in the TornTools settings.
 
+I've also quit Torn to focus on other areas of my life. This script is now powered by TornPal, and hopefully the bulk of this script won't need any maintenance. If you're interested in continuing the development of this script please feel free to fork this project or develop your own using the TornPal backend.
+
 Discord server: [TornPal](https://discord.gg/HBgVjs8aVe)
 
 Quick installation links - try the first one and move down the list if it doesn't work. Browsers should only need the first one. Torn PDA may require a few options depending on where you're clicking from
