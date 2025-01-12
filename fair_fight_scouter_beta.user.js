@@ -2,7 +2,7 @@
 // @name          FF Scouter
 // @namespace     Violentmonkey Scripts
 // @match         https://www.torn.com/*
-// @version       2.0
+// @version       2.1
 // @author        rDacted
 // @description   Shows the expected Fair Fight score against targets
 // @grant         GM_xmlhttpRequest
@@ -14,7 +14,7 @@
 // @connect       tornpal.com
 // ==/UserScript==
 
-const FF_VERSION = 2.0;
+const FF_VERSION = 2.1;
 
 // This is a standalone version of FF Scouter which has been integrated into TornTools
 // This version is provided for TornPDA users, or those that don't use TornTools
@@ -85,7 +85,7 @@ if (!singleton) {
     var rD_xmlhttpRequest;
     var rD_setValue;
     var rD_getValue;
-    //var rD_deleteValue;
+    var rD_deleteValue;
     var rD_registerMenuCommand;
 
     // DO NOT CHANGE THIS
@@ -120,10 +120,10 @@ if (!singleton) {
             //console.log("Attempted to get " + name + " -> " + value);
             return value;
         }
-        //        rD_deleteValue = function (name) {
-        //            console.log("Attempted to delete " + name);
-        //            return localStorage.removeItem(name);
-        //        }
+        rD_deleteValue = function (name) {
+            console.log("Attempted to delete " + name);
+            return localStorage.removeItem(name);
+        }
         rD_registerMenuCommand = function () {
             console.log("Disabling GM_registerMenuCommand");
         }
@@ -133,7 +133,7 @@ if (!singleton) {
         rD_xmlhttpRequest = GM_xmlhttpRequest;
         rD_setValue = GM_setValue;
         rD_getValue = GM_getValue;
-        //rD_deleteValue = GM_deleteValue;
+        rD_deleteValue = GM_deleteValue;
         rD_registerMenuCommand = GM_registerMenuCommand;
     }
 
@@ -206,6 +206,7 @@ if (!singleton) {
 
             var player_id_list = unknown_player_ids.join(",")
             const url = `${BASE_URL}/api/v1/ffscoutergroup?key=${key}&targets=${player_id_list}`;
+
             //console.log(url);
 
             rD_xmlhttpRequest({
@@ -214,6 +215,7 @@ if (!singleton) {
                 onload: function (response) {
                     if (response.status == 200) {
                         var ff_response = JSON.parse(response.responseText);
+                        //console.log(ff_response);
                         if (ff_response.status) {
                             var one_hour = 60 * 60 * 1000;
                             var expiry = Date.now() + one_hour;
@@ -231,6 +233,9 @@ if (!singleton) {
                             callback(player_ids);
                         } else {
                             console.log("FF Scouter failed to get player information. Error message: " + ff_response.message);
+                            if (ff_response.error_code == 3) {
+                                rD_deleteValue('limited_key');
+                            }
                         }
                     }
                     else {
