@@ -2,7 +2,7 @@
 // @name          FF Scouter
 // @namespace     Violentmonkey Scripts
 // @match         https://www.torn.com/*
-// @version       1.28
+// @version       2.0
 // @author        rDacted
 // @description   Shows the expected Fair Fight score against targets
 // @grant         GM_xmlhttpRequest
@@ -11,43 +11,15 @@
 // @grant         GM_deleteValue
 // @grant         GM_registerMenuCommand
 // @grant         GM_addStyle
-// @connect       absolutely-golden-airedale.edgecompute.app
+// @connect       tornpal.com
 // ==/UserScript==
 
-const FF_VERSION = 1.28;
+const FF_VERSION = 2.0;
 
-// Website: https://rdacted2.github.io/fair_fight_scouter/
-//
-// NOTE
-// This script requires a limited access api key, or a custom key generated with the following permissions
-// https://www.torn.com/preferences.php#tab=api?step=addNewKey&title=torn&user=basic,attacks,battlestats
-//
-// Your key is sent to a backend service which does the following
-// - Obtains your identity (for authentication)
-// - Obtains your battle stats
-// - Looks at your attack history
-//
-// For the sake of your privacy, the following happens
-// - Your key is not stored on the server
-// - Your battle stats are converted into a single battle score, which is the summation of the square
-//   root of each of your four stats. This information is not private, as it's leaked anytime you make
-//   an attack (or are attacked)
-// - The only data I use from the attack log is the identity of your opponent, and the fair-fight
-//   value of the fight
-//
-// Full disclosure
-// I have a separate service that I provide to unmask stealth attackers.
-// I DO NOT USE the attack data to identify when you have stealth attacked someone so that I can report
-// you to them.
-// I specifically released my stealth reveal capabilities to show that I can do it without any privileged
-// access, and I promise not to abuse any privileged access provided to me by your key in order to
-// reveal privileged information to any third party.
-// If I happen to reveal you as the stealthed attacker to someone else, the source of that data is public
-// information that everyone already has access to
-//
-// If you're concerned about sharing your battle score, note that anyone you defeat can calculate your
-// battle score by simply calculating their battle score and using the fair-fight value of your attack
-// to determine what your battle score is. It's not public information, but it's also not private.
+// This is a standalone version of FF Scouter which has been integrated into TornTools
+// This version is provided for TornPDA users, or those that don't use TornTools
+// However I (rDacted) have quit torn, so this script is provided in an unsupported manner
+// I encourage anyone to re-implement this script if they're willing to provide support to the community
 
 // Ensure this code can only ever run once in any page
 let singleton = document.getElementById('ff-scouter-run-once');
@@ -105,9 +77,7 @@ if (!singleton) {
         }
     `);
 
-    var BASE_URL = "https://absolutely-golden-airedale.edgecompute.app";
-    var PERFECT_FF = "https://raw.githubusercontent.com/rDacted2/fair_fight_scouter/main/images/lime_green_stars.gif"
-    var WORST_FF = "https://raw.githubusercontent.com/rDacted2/fair_fight_scouter/main/images/poop.gif";
+    var BASE_URL = "https://tornpal.com";
     var BLUE_ARROW = "https://raw.githubusercontent.com/rDacted2/fair_fight_scouter/main/images/blue-arrow.svg";
     var GREEN_ARROW = "https://raw.githubusercontent.com/rDacted2/fair_fight_scouter/main/images/green-arrow.svg";
     var RED_ARROW = "https://raw.githubusercontent.com/rDacted2/fair_fight_scouter/main/images/red-arrow.svg";
@@ -115,7 +85,7 @@ if (!singleton) {
     var rD_xmlhttpRequest;
     var rD_setValue;
     var rD_getValue;
-    var rD_deleteValue;
+    //var rD_deleteValue;
     var rD_registerMenuCommand;
 
     // DO NOT CHANGE THIS
@@ -150,10 +120,10 @@ if (!singleton) {
             //console.log("Attempted to get " + name + " -> " + value);
             return value;
         }
-        rD_deleteValue = function (name) {
-            console.log("Attempted to delete " + name);
-            return localStorage.removeItem(name);
-        }
+        //        rD_deleteValue = function (name) {
+        //            console.log("Attempted to delete " + name);
+        //            return localStorage.removeItem(name);
+        //        }
         rD_registerMenuCommand = function () {
             console.log("Disabling GM_registerMenuCommand");
         }
@@ -163,7 +133,7 @@ if (!singleton) {
         rD_xmlhttpRequest = GM_xmlhttpRequest;
         rD_setValue = GM_setValue;
         rD_getValue = GM_getValue;
-        rD_deleteValue = GM_deleteValue;
+        //rD_deleteValue = GM_deleteValue;
         rD_registerMenuCommand = GM_registerMenuCommand;
     }
 
@@ -179,43 +149,9 @@ if (!singleton) {
         }
     });
 
-    var first_update_request = true;
-    function force_update() {
-        if (first_update_request) {
-            first_update_request = false;
-
-            const url = `${BASE_URL}/api/v2/force_update?api_key=${key}`;
-            //console.log(url);
-
-            rD_xmlhttpRequest({
-                method: "GET",
-                url: url,
-                onload: function (response) {
-                    console.log(`force update returned ${response.status}`);
-                    if (response.status == 200) {
-                        const match1 = window.location.href.match(/https:\/\/www.torn.com\/profiles.php\?XID=(?<target_id>\d+)/);
-                        const match2 = window.location.href.match(/https:\/\/www.torn.com\/loader.php\?sid=attack&user2ID=(?<target_id>\d+)/);
-                        const match = match1 ?? match2
-                        if (match) {
-                            var target_id = match.groups.target_id
-                            // Invalidate this target_id
-                            rD_deleteValue("" + target_id);
-                            // Download the new update
-                            update_ff_cache([target_id], function (target_ids) { display_fair_fight(target_ids[0]) })
-                        }
-                    }
-                },
-                onerror: function (e) { console.error('**** error ', e); },
-                onabort: function (e) { console.error('**** abort ', e); },
-                ontimeout: function (e) { console.error('**** timeout ', e); }
-            });
-        }
-    }
-
-
     function create_text_location() {
         info_line = document.createElement('div');
-        info_line.id = "battleScoreKeyPanel";
+        info_line.id = "ff-scouter-run-once";
         info_line.style.display = 'flex'; // Use flexbox for centering
         info_line.style.cursor = 'pointer'; // Change cursor to pointer
         info_line.addEventListener('click', () => {
@@ -228,8 +164,6 @@ if (!singleton) {
                     // Reload page
                     window.location.reload();
                 }
-            } else {
-                force_update();
             }
         });
 
@@ -271,7 +205,7 @@ if (!singleton) {
             console.log(`Refreshing cache for ${unknown_player_ids.length} ids`);
 
             var player_id_list = unknown_player_ids.join(",")
-            const url = `${BASE_URL}/api/v2/fair_fight?api_key=${key}&id=${player_id_list}`;
+            const url = `${BASE_URL}/api/v1/ffscoutergroup?key=${key}&targets=${player_id_list}`;
             //console.log(url);
 
             rD_xmlhttpRequest({
@@ -280,29 +214,23 @@ if (!singleton) {
                 onload: function (response) {
                     if (response.status == 200) {
                         var ff_response = JSON.parse(response.responseText);
-                        if (ff_response.success) {
+                        if (ff_response.status) {
                             var one_hour = 60 * 60 * 1000;
                             var expiry = Date.now() + one_hour;
-                            for (const player_id of unknown_player_ids) {
-                                if (ff_response.success[player_id]) {
+
+                            Object.entries(ff_response.results).forEach(([id, result]) => {
+                                if (result.status) {
+                                    result = result.result;
                                     // Cache the value
-                                    //console.log("Caching stats for " + player_id);
-                                    ff_response.success[player_id].expiry = expiry;
-                                    rD_setValue("" + player_id, JSON.stringify(ff_response.success[player_id]));
+                                    //console.log("Caching stats for " + id);
+                                    result.expiry = expiry;
+                                    rD_setValue("" + id, JSON.stringify(result));
                                 }
-                            }
+                            });
 
                             callback(player_ids);
-                        }
-                        else if (ff_response.error) {
-                            set_message(`FF query failed: ${ff_response.error}`, true);
-                            if (ff_response.key_invalid) {
-                                console.log("Deleting key");
-                                rD_deleteValue("limited_key")
-                            }
-                        }
-                        else {
-                            console.log("An unknown error occurred: " + ff_response);
+                        } else {
+                            console.log("FF Scouter failed to get player information. Error message: " + ff_response.message);
                         }
                     }
                     else {
@@ -342,36 +270,26 @@ if (!singleton) {
     }
 
     function get_ff_string(ff_response) {
-        const ff_low = ff_response.ff_low.toFixed(2);
-        const ff_high = (ff_response.ff_high || 0).toFixed(2);
+        const ff = ff_response.value.toFixed(2);
 
         const now = Date.now() / 1000;
-        const age = now - ff_response.timestamp;
+        const age = now - ff_response.last_updated;
 
         var suffix = ""
         if (age > (14 * 24 * 60 * 60)) {
             suffix = "?"
         }
 
-        if (ff_low == ff_high) {
-            return `${ff_low}${suffix}`
-        }
-
-        if (ff_low < ff_high) {
-            return `${ff_low}-${ff_high}${suffix}`
-        }
-
-        return `${ff_low}+${suffix}`
+        return `${ff}${suffix}`;
     }
 
     function get_ff_string_short(ff_response) {
-        const ff_low = ff_response.ff_low.toFixed(2);
-        const ff_high = (ff_response.ff_high || 0).toFixed(2);
+        const ff = ff_response.value.toFixed(2);
 
         const now = Date.now() / 1000;
-        const age = now - ff_response.timestamp;
+        const age = now - ff_response.last_updated;
 
-        if (ff_low > 9) {
+        if (ff > 9) {
             return 'high';
         }
 
@@ -380,23 +298,14 @@ if (!singleton) {
             suffix = "?";
         }
 
-        if (ff_low == ff_high) {
-            return `${ff_low}${suffix}`
-        }
-
-        // The space is important so the line can be split correctly
-        if (ff_low < ff_high) {
-            return `${ff_low}- ${ff_high}${suffix}`
-        }
-
-        return `${ff_low}+${suffix}`
+        return `${ff}${suffix}`;
     }
 
     function get_detailed_message(ff_response) {
         const ff_string = get_ff_string(ff_response)
 
         const now = Date.now() / 1000;
-        const age = now - ff_response.timestamp;
+        const age = now - ff_response.last_updated;
 
         var fresh = "";
 
@@ -552,10 +461,10 @@ if (!singleton) {
 
             // Lookup the fair fight score from cache
             if (fair_fights[player_id]) {
-                const ff_low = fair_fights[player_id].ff_low;
+                const ff = fair_fights[player_id].value;
                 const ff_string = get_ff_string_short(fair_fights[player_id])
 
-                const background_colour = get_ff_colour(ff_low);
+                const background_colour = get_ff_colour(ff);
                 const text_colour = get_contrast_color(background_colour);
                 fair_fight_div.style.backgroundColor = background_colour;
                 fair_fight_div.style.color = text_colour;
@@ -617,113 +526,6 @@ if (!singleton) {
 
         torn_observer.observe(document, { attributes: false, childList: true, characterData: false, subtree: true });
 
-        function set_colours() {
-            $(".chain-attacks-list").children("li").each(function () {
-                if ($(this).hasClass("ff_processed") == false) {
-                    var success = false;
-                    if ($(this).find(".chain-arrow-icon").hasClass("enemy") == false) {
-
-                        const ff_str = $(this).find(".fair-fight").attr('title');
-                        if (ff_str) {
-                            const isRetal = $(this).find(".retaliation").attr("title") !== "Retaliation: None";
-                            const match = ff_str.match(/Fair fight: x(?<ff_val>\d.\d+)/);
-                            if (match) {
-                                const ff_val = match.groups.ff_val;
-                                if (ff_val === "3.00") {
-                                    $(this).css({ backgroundImage: `url(${PERFECT_FF})` });
-                                } else {
-                                    const ff_float = parseFloat(ff_val);
-                                    if (ff_float > 2.5 || isRetal) {
-                                        $(this).css({ backgroundColor: '#2e5902' });
-                                    } else if (ff_float > 2.0) {
-                                        $(this).css({ backgroundColor: '#575504' });
-                                    } else if (ff_float > 1.3) {
-                                        $(this).css({ backgroundColor: '#574404' });
-                                    } else {
-                                        // If war do poop, if chain > 10 do poop, otherwise, extra brown
-                                        if ($(this).find(".war-hit").attr("title") !== "War bonus: None") {
-                                            $(this).css({ backgroundImage: `url(${WORST_FF})` });
-                                        } else {
-                                            // Ignores any "#1" single digit numbers and flags any poop with double digits or more
-                                            if (2 < $(this).find(".attack-number").text().length) {
-                                                $(this).css({ backgroundImage: `url(${WORST_FF})` });
-                                            } else {
-                                                $(this).css({ backgroundColor: '#261d01' });
-                                            }
-                                        }
-                                    }
-                                }
-                                success = true;
-                            }
-                        }
-                    } else {
-                        success = true;
-                    }
-
-                    if (success) {
-                        $(this).addClass("ff_processed");
-                    }
-                }
-            });
-        }
-
-        function clear_colours() {
-            $(".chain-attacks-list").children("li").each(function () {
-                if ($(this).hasClass("ff_processed")) {
-                    $(this).removeClass("ff_processed");
-                    $(this).css({ backgroundImage: "" });
-                    $(this).css({ backgroundColor: "" });
-                }
-            });
-        }
-
-        // Make the chain hits highlight FF3.0 hits
-        var chain_colour_enabled = rD_getValue("chain_colour", "false");
-        function make_pretty() {
-            var chain_title = $(".chain-attacks-title")[0]
-            if (chain_title) {
-
-                if (!$("#chain_colour_button").length) {
-                    // No button exists, create one
-                    var colour_button = document.createElement('div');
-                    colour_button.id = "chain_colour_button";
-                    colour_button.style.display = 'flex'; // Use flexbox for centering
-                    colour_button.style.cursor = 'pointer'; // Change cursor to pointer
-                    colour_button.addEventListener('click', () => {
-                        if (chain_colour_enabled === "true") {
-                            rD_setValue("chain_colour", "false");
-                            chain_colour_enabled = "false";
-                            console.log("Removing colours");
-                            clear_colours();
-                        } else {
-                            rD_setValue("chain_colour", "true");
-                            chain_colour_enabled = "true";
-                            console.log("Setting colours");
-                            set_colours();
-                        }
-                    });
-
-                    const textNode = document.createTextNode("Toggle colours");
-                    textNode.id = "chain_colour_toggle";
-                    colour_button.appendChild(textNode);
-                    chain_title.appendChild(colour_button);
-                }
-
-                if (chain_colour_enabled === "true") {
-                    set_colours();
-                } else {
-                    clear_colours();
-                }
-            }
-        }
-
-        if (window.location.href.startsWith("https://www.torn.com/factions.php?step=your")) {
-            const torn_observer = new MutationObserver(function () {
-                make_pretty(torn_observer);
-            });
-
-            torn_observer.observe(document, { attributes: false, childList: true, characterData: false, subtree: true });
-        }
         if (!key) {
             set_message("Limited API key needed - click to add");
         }
@@ -757,10 +559,10 @@ if (!singleton) {
         return null;
     }
 
-    function get_ff_low(target_id) {
+    function get_ff(target_id) {
         const response = get_fair_fight_response(target_id);
         if (response) {
-            return response.ff_low;
+            return response.value;
         }
 
         return null;
@@ -807,9 +609,9 @@ if (!singleton) {
                 //$(element).append($("<div>", { class: "ff-scouter-vertical-line-high-lower" }));
             }
 
-            const ff_low = get_ff_low(player_id);
-            if (ff_low) {
-                const percent = ff_to_percent(ff_low);
+            const ff = get_ff(player_id);
+            if (ff) {
+                const percent = ff_to_percent(ff);
                 element.style.setProperty("--band-percent", percent);
 
                 $(element).find('.ff-scouter-arrow').remove();
@@ -924,19 +726,4 @@ if (!singleton) {
     });
 
     ff_gauge_observer.observe(document, { attributes: false, childList: true, characterData: false, subtree: true });
-
-
-    if (key) {
-        const settings = $(".settings-menu > li > a > :contains(Settings)")[0].parentNode?.parentNode;
-        if (settings) {
-            const ff_benefits = settings.cloneNode(true);
-            ff_benefits.id = "ff-scouter-run-once";
-            const ff_benefits_a = $("a", ff_benefits)[0];
-            ff_benefits_a.href = `${BASE_URL}/ff_scouter/index.html?api_key=${key}`;
-            ff_benefits_a.target = "_blank";
-            $("span", ff_benefits)[0].innerText = "FF Scouter Extras";
-
-            settings.parentNode?.insertBefore(ff_benefits, settings.nextSibling);
-        }
-    }
 }
