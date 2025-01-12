@@ -2,7 +2,7 @@
 // @name          FF Scouter
 // @namespace     Violentmonkey Scripts
 // @match         https://www.torn.com/*
-// @version       2.1
+// @version       2.2
 // @author        rDacted
 // @description   Shows the expected Fair Fight score against targets
 // @grant         GM_xmlhttpRequest
@@ -196,6 +196,9 @@ if (!singleton) {
         if (!key) {
             return
         }
+
+        // Deduplicate
+        player_ids = [...new Set(player_ids)];
 
         // Given a list of players remove any where the cache is already fresh enough
         // Then make a request for any unknown players and call the callback
