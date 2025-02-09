@@ -15,6 +15,7 @@
 // ==/UserScript==
 
 const FF_VERSION = 2.1;
+const PLAYER_CHUNK_SIZE = 60;
 
 // This is a standalone version of FF Scouter which has been integrated into TornTools
 // This version is provided for TornPDA users, or those that don't use TornTools
@@ -203,52 +204,86 @@ if (!singleton) {
         // Given a list of players remove any where the cache is already fresh enough
         // Then make a request for any unknown players and call the callback
         var unknown_player_ids = get_cache_misses(player_ids)
+        var unknown_player_ids_split = split_player_ids(unknown_player_ids);
 
         if (unknown_player_ids.length > 0) {
-            console.log(`Refreshing cache for ${unknown_player_ids.length} ids`);
+            console.log(
+              `Refreshing cache for ${unknown_player_ids.length} ids across ${unknown_player_ids_split.length} requests`,
+            );
 
-            var player_id_list = unknown_player_ids.join(",")
-            const url = `${BASE_URL}/api/v1/ffscoutergroup?key=${key}&targets=${player_id_list}`;
+            var player_ids_received = [];
+            var requests_completed = [];
 
-            //console.log(url);
+            for (var i = 0; i < unknown_player_ids_split.length; i++) {
+              var player_id_list = unknown_player_ids_split[i].join(",");
+              const url = `${BASE_URL}/api/v1/ffscoutergroup?key=${key}&targets=${player_id_list}`;
 
-            rD_xmlhttpRequest({
+              console.log(url);
+
+              rD_xmlhttpRequest({
                 method: "GET",
                 url: url,
                 onload: function (response) {
-                    if (response.status == 200) {
-                        var ff_response = JSON.parse(response.responseText);
-                        //console.log(ff_response);
-                        if (ff_response.status) {
-                            var one_hour = 60 * 60 * 1000;
-                            var expiry = Date.now() + one_hour;
+                  requests_completed.push(1);
+                  if (response.status == 200) {
+                    var ff_response = JSON.parse(response.responseText);
+                    //console.log(ff_response);
+                    if (ff_response.status) {
+                      var one_hour = 60 * 60 * 1000;
+                      var expiry = Date.now() + one_hour;
 
-                            Object.entries(ff_response.results).forEach(([id, result]) => {
-                                if (result.status) {
-                                    result = result.result;
-                                    // Cache the value
-                                    //console.log("Caching stats for " + id);
-                                    result.expiry = expiry;
-                                    rD_setValue("" + id, JSON.stringify(result));
-                                }
-                            });
-
-                            callback(player_ids);
-                        } else {
-                            console.log("FF Scouter failed to get player information. Error message: " + ff_response.message);
-                            if (ff_response.error_code == 3) {
-                                rD_deleteValue('limited_key');
-                            }
+                      Object.entries(ff_response.results).forEach(([id, result]) => {
+                        if (result.status) {
+                          result = result.result;
+                          // Cache the value
+                          //console.log("Caching stats for " + id);
+                          result.expiry = expiry;
+                          rD_setValue("" + id, JSON.stringify(result));
                         }
+                      });
+
+                      player_ids_received = player_ids_received.concat(player_ids);
+                    } else {
+                      console.log(
+                        "FF Scouter failed to get player information. Error message: " +
+                          ff_response.message,
+                      );
+                      if (ff_response.error_code == 3) {
+                        rD_deleteValue("limited_key");
+                      }
                     }
-                    else {
-                        console.log("Failed to make request, status code " + response.status);
-                    }
+                  } else {
+                    console.log(
+                      "Failed to make request, status code " + response.status,
+                    );
+                  }
+                  if (requests_completed.length >= unknown_player_ids_split.length) {
+                    callback(player_ids_received);
+                  }
                 },
-                onerror: function (e) { console.error('**** error ', e); },
-                onabort: function (e) { console.error('**** abort ', e); },
-                ontimeout: function (e) { console.error('**** timeout ', e); }
-            });
+                onerror: function (e) {
+                  console.error("**** error ", e);
+                  requests_completed.push(1);
+                  if (requests_completed.length >= unknown_player_ids_split.length) {
+                    callback(player_ids_received);
+                  }
+                },
+                onabort: function (e) {
+                  console.error("**** abort ", e);
+                  requests_completed.push(1);
+                  if (requests_completed.length >= unknown_player_ids_split.length) {
+                    callback(player_ids_received);
+                  }
+                },
+                ontimeout: function (e) {
+                  console.error("**** timeout ", e);
+                  requests_completed.push(1);
+                  if (requests_completed.length >= unknown_player_ids_split.length) {
+                    callback(player_ids_received);
+                  }
+                },
+              });
+          }
         } else {
             callback(player_ids);
         }
@@ -504,6 +539,15 @@ if (!singleton) {
         }
 
         return unknown_player_ids;
+    }
+
+    function split_player_ids(player_ids) {
+      var player_ids_lists = [];
+      for (let i = 0; i < player_ids.length; i += PLAYER_CHUNK_SIZE) {
+        player_ids_lists.push(player_ids.slice(i, i + PLAYER_CHUNK_SIZE));
+      }
+
+      return player_ids_lists;
     }
 
     create_text_location();
